@@ -1,0 +1,37 @@
+/* Empty. Add your own CSS if you like */
+.app-logo{
+  background-image:url('../Assets/logo2.png');
+  background-repeat: no-repeat;
+    background-position: 90%;
+    border-radius: 50%;
+    width: auto;
+    height: auto;
+    max-width:200px;
+    max-height: 200px;
+}
+.ng-invalid.ng-dirty{
+  border-color: #FA787E;
+}
+.ng-valid.ng-dirty{
+  border-color: #78FA89;
+}
+
+.popup-title {
+  //color: #78FA89 !important;
+}
+.popup{
+  // width:100px
+}
+.popup-body{
+  // background: blue !important;
+  // color:#fff !important;
+  // font-size:24px !important;
+
+//  padding: 20px;
+//  overflow: scroll;
+//  text-align: justify
+}
+
+.popup-buttons {
+
+}
