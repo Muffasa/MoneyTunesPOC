@@ -25,5 +25,7 @@
       "id": "com.phonegap.plugins.PushPlugin"
     }
   ],
-  "cordovaPlatforms": []
+  "cordovaPlatforms": [
+    "android"
+  ]
 }

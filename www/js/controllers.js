@@ -185,7 +185,7 @@ angular.module('starter.controllers', [])
 
 
 })
-.controller('WelcomePostCtrl',function($scope,$rootScope,$http,$state,$stateParams,$ionicUser,$ionicPush,$ionicPopup,Auth,socket){
+.controller('WelcomePostCtrl',function($scope,$rootScope,$http,$state,$stateParams,$ionicUser,$ionicPush,$ionicPopup,$q,$cordovaDevice,Auth,socket){
 
    
 
@@ -194,8 +194,140 @@ angular.module('starter.controllers', [])
     console.log('Ionic Push: Got token ', data.token, data.platform);
     $scope.deviceToken = data.token;
   });
+
+$scope.ConfirmSmsCode =function(user_code){
+  flow(user_code).then(function(){
+    $state.go('tab');
+  },function(error){
+      $ionicPopup.alert({
+      title: 'Smthing went wrong ):',
+      template: 'En error occured:' +error
+      });
+    });
+  };
+
   
-$scope.ConfirmSmsCode = function(user_code){
+var flow = function(user_code){
+  var d = $q.defer();
+  socket.emit('ConfirmSmsCode',user_code,$stateParams.userPhoneNumber);
+
+    socket.on("SmsCodeConfirmed",function(token){
+      socket.removeListener('WrongCode');
+      
+      getTwilioToken().then(function(twilioToken){
+
+        $scope.twilioToken=twilioToken;
+        ionicIdentifyUser().then(function(){
+
+          miniRegister().then(function(firebaseUid){
+
+            $scope.firebaseUid=firebaseUid;
+            pushRegister().then(function(){
+
+              d.resolve();
+
+            },function(error){
+              console.log("ionic push register error:" + error);
+              d.reject(error);
+            })
+          },function(error){
+            console.log("firebase mini register error:" + error);
+            d.reject(error);
+          })
+        },function(error){
+          console.log("ionic idenification error:" + error);
+          d.reject(error);
+        })
+      },function(error){
+        console.log("twilio error:" +error);
+        d.reject(error);
+      })
+
+      
+      
+      socket.removeListener('SmsCodeConfirmed');
+      
+    });
+
+    socket.on('WrongCode',function(){
+      $ionicPopup.alert({
+      title: 'Wrong code',
+      template: 'The code you entered is wrong, please try again'
+      });
+      socket.removeListener('WrongCode');
+    });
+
+return d.promise;
+  
+};
+
+var getTwilioToken= function (){
+  var d = $q.defer();
+
+   $http.get('http://188.226.198.99:3000/twilioTokenGen/'+$stateParams.userPhoneNumber)
+             .success(function(twilioToken){
+                d.resolve(twilioToken);
+              },function(error){
+                d.reject(error);
+              });
+
+    return d.promise;         
+
+};
+
+var ionicIdentifyUser = function() {
+  var d = $q.defer();
+
+    var user = $ionicUser.get();
+    if(!user.user_id) {
+      user.user_id = $stateParams.userPhoneNumber;
+      user.uuid=$cordovaDevice.getUUID();
+    };
+
+    // Identify your user with the Ionic User Service
+    $ionicUser.identify(user).then(function(){
+      $rootScope.ionicUserIdentified = true;
+      $scope.ionicUserId =user.user_id;
+      d.resolve();
+    },function (error) {
+      d.reject(error);
+    });
+    return d.promise;
+  };
+
+  var pushRegister = function() {
+  
+
+    $ionicPush.register({
+      canShowAlert: true, //Can pushes show an alert on your screen?
+      canSetBadge: true, //Can pushes update app icon badges?
+      canPlaySound: true, //Can notifications play a sound?
+      canRunActionsOnWake: true, //Can run actions outside the app,
+      onNotification: function(notification) {
+        
+         console.log(notification);
+        return true;
+      }
+    })
+  };
+
+  var miniRegister = function (){
+    var d = $q.defer();
+        Auth.$createUser({
+        phone_number: $stateParams.userPhoneNumber,
+        uuid:$cordovaDevice.getUUID()
+        
+      }).then(function(userData) {
+        console.log("User created with uid: " + userData.uid);
+        d.resolve(userData.user_id);
+      }).catch(function(error) {
+        d.reject(error);
+      });
+      return d.promise;
+    };
+
+  
+$scope.ConfirmSmsCodeOld = function(user_code){
   socket.emit('ConfirmSmsCode',user_code,$stateParams.userPhoneNumber);
 
     socket.on("SmsCodeConfirmed",function(token){
