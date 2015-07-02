@@ -19,7 +19,15 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
       // org.apache.cordova.statusbar required
       StatusBar.styleLightContent();
     }
-  });
+
+
+       $scope.$apply(function() {            
+                       // sometimes binding does not work! 
+                var device = $cordovaDevice.getDevice();           
+           
+                     });  
+          
+        });
 })
 
 .config(['$ionicAppProvider', function($ionicAppProvider) {
