@@ -1,10 +1,10 @@
 <ion-view view-title="Contacts">
   <ion-content>
     <ion-list>
-      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="chat in chats" type="item-text-wrap" href="#/tab/contacts/{{contact.id}}">
+      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="contact in contacts" type="item-text-wrap" href="#/tab/contacts/{{contact.id}}">
 
         <img ng-src="{{contact.face}}">
-        <h2>{{contact.name}}</h2>
+        <h2>{{contact.phone_number}}</h2>
         <!--<p>{{chat.lastText}}</p>-->
         <i class="icon ion-chevron-right icon-accessory"></i>
 

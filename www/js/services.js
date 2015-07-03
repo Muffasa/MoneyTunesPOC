@@ -15,6 +15,76 @@ angular.module('starter.services', [])
   }
 ])
 
+.factory("User", ["$firebaseObject","$firebaseAuth",
+  function($firebaseObject,$firebaseAuth) {
+    var ref = new Firebase("https://mtdemo.firebaseio.com");
+    var userRef = new Firebase("https://mtdemo.firebaseio.com/users");
+    var users = $firebaseObject(userRef);
+    var Auth=$firebaseAuth(ref);
+    var currentUserId=null;
+    var currentUser=null;
+    var getCurrentUser =function(){
+        if(currentUser){
+          return currentUser;
+        }
+        else{ 
+             if(currentUserId){
+              
+                  currentUserRef = new Firebase("https://mtdemo.firebaseio.com/users/"+currentUserId);
+                  return $firebaseObject(currentUserRef);
+
+                  
+            }
+          }
+      };
+
+      var setUid = function(uid){
+        currentUserId=uid;
+        window.localStorage.setItem("uid",uid);
+      };
+
+    return{
+      saveAuthTokenLocally: function(authToken){
+        if(!window.localStorage.getItem("authToken")){
+          window.localStorage.setItem("authToken",authToken)
+        }
+      },
+      deleteLocalAuthToken: function(){
+        window.localStorage.removeItem("authToken");
+      },
+      gotAuthToken:function(){
+        return window.localStorage.getItem('authToken');
+      },
+      isAuth: function(){
+         var authData = Auth.$getAuth();
+         if(authData){
+          setUid(authData.uid);
+          return true;
+         }
+         else{
+          return false;
+         }
+
+      },
+      auth: function(){
+        Auth.$authWithCustomToken(window.localStorage.getItem('authToken')).then(function(authData){
+              setUid(authData.uid);
+        });
+        getCurrentUser();
+      },
+      unauth: function(){
+        Auth.$unauth();
+      },
+
+      getCurrentUser: getCurrentUser,
+      setId:setUid
+
+    }
+
+
+  }
+])
+
 .factory('socket',function(socketFactory,$rootScope){
         
          var myIoSocket = io.connect('http://188.226.198.99:3000');
@@ -283,13 +353,25 @@ angular.module('starter.services', [])
         }
       }
       return null;
+    },
+    getByDialCode: function(prefix){
+      for (var i = 0; i < countries_data.length; i++) {
+        if (countries_data[i].dial_code == prefix) {
+          return countries_data[i].name;
+        }
+      }
+      return null;
     }
   };
-})
+ })
 
-.factory('Contacts',function(){
+.factory('Contacts',['$firebaseArray',function($firebaseArray){
 
-})
+    var userRef = new Firebase("https://mtdemo.firebaseio.com/users");
+    return $firebaseArray(userRef);
+
+
+}])
 
 
 .factory('Chats', function() {

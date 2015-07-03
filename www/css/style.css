@@ -16,6 +16,9 @@
   border-color: #78FA89;
 }
 
+.bottom-align{
+  position: absolute; bottom: 0px; width: 100%
+}
 .popup-title {
   //color: #78FA89 !important;
 }
@@ -34,4 +37,35 @@
 
 .popup-buttons {
 
+}
+
+.scroll-content {
+  display: table !important;
+  width: 100% !important;
+  height: 100% !important;
+
+}
+.scroll {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+
+
+.Aligner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Aligner-item {
+  max-width: 50%;
+}
+
+.Aligner-item--top {
+  align-self: flex-start;
+}
+
+.Aligner-item--bottom {
+  align-self: flex-end;
 }

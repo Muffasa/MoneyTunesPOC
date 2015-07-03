@@ -8,7 +8,7 @@
 
 angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','ionic.service.push','ionic.service.core', 'starter.controllers', 'starter.services'])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform,$rootScope,$ionicLoading,Auth,User) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -19,15 +19,89 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
       // org.apache.cordova.statusbar required
       StatusBar.styleLightContent();
     }
+        //reset Auth and local save
+    //if(User.gotAuthToken()||User.isAuth()){User.unauth();User.deleteLocalAuthToken();}
+    if(User.gotAuthToken()&&!User.isAuth()){
+      User.auth();
+    }
+    if(User.isAuth()){
+      var user=User.getCurrentUser();
+      console.log("the current user after auth: " + user.phone_number);
+    }
 
 
-       $scope.$apply(function() {            
+    $rootScope.userEmail = null;
+    $rootScope.baseUrl = 'https://bucketlist-app.firebaseio.com/';
+    var authRef = new Firebase($rootScope.baseUrl);
+    //$rootScope.auth = $firebaseAuth(authRef);
+ 
+    $rootScope.show = function(text) {
+      $rootScope.loading = $ionicLoading.show({
+        content: text ? text : 'Loading..',
+        animation: 'fade-in',
+        showBackdrop: true,
+        maxWidth: 200,
+        showDelay: 0
+      });
+    };
+ 
+    $rootScope.hide = function() {
+      $ionicLoading.hide();
+    };
+ 
+    $rootScope.notify = function(text) {
+      $rootScope.show(text);
+      $window.setTimeout(function() {
+        $rootScope.hide();
+      }, 1999);
+    };
+ 
+    $rootScope.logout = function() {
+      $rootScope.auth.$logout();
+      $rootScope.checkSession();
+    };
+ 
+    $rootScope.checkSession = function() {
+      var auth = new FirebaseSimpleLogin(authRef, function(error, user) {
+        if (error) {
+          // no action yet.. redirect to default route
+          $rootScope.userEmail = null;
+          $window.location.href = '#/auth/signin';
+        } else if (user) {
+          // user authenticated with Firebase
+          $rootScope.userEmail = user.email;
+          $window.location.href = ('#/bucket/list');
+        } else {
+          // user is logged out
+          $rootScope.userEmail = null;
+          $window.location.href = '#/auth/signin';
+        }
+      });
+    }
+
+      
+      
+    
+
+
+       /*$scope.$apply(function() {            
                        // sometimes binding does not work! 
                 var device = $cordovaDevice.getDevice();           
            
                      });  
+
+        });*/
+
+      $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
           
-        });
+      if (toState.authRequired && !Auth.$getAuth()){ //Assuming the AuthService holds authentication logic
+        // User isn’t authenticated
+        $state.go("welcome");
+        event.preventDefault(); 
+      }
+    });
+ 
+      });
 })
 
 .config(['$ionicAppProvider', function($ionicAppProvider) {
@@ -52,10 +126,12 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
   // Each state's controller can be found in controllers.js
   $stateProvider
 
+
   .state('welcome', {
     url: '/welcome',
     templateUrl: 'templates/welcome/welcome.html',
     controller: 'WelcomeCtrl'
+    
   })
   .state('welcome-post-sms', {
     url: '/welcome/:userPhoneNumber',
@@ -78,7 +154,8 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
     .state('tab', {
     url: "/tab",
   //  abstract: true,
-    templateUrl: "templates/tabs.html"
+    templateUrl: "templates/tabs.html",
+    authRequired: true
   })
 
   // Each tab has its own nav history stack:
@@ -90,7 +167,8 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
         templateUrl: 'templates/tab-dash.html',
         controller: 'DashCtrl'
       }
-    }
+    },
+        authRequired: true
   })
 
   .state('tab.chats', {
@@ -100,7 +178,8 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
           templateUrl: 'templates/tab-chats.html',
           controller: 'ChatsCtrl'
         }
-      }
+      },
+        authRequired: true
     })
     .state('tab.chat-detail', {
       url: '/chats/:chatId',
@@ -109,7 +188,8 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
           templateUrl: 'templates/chat-detail.html',
           controller: 'ChatDetailCtrl'
         }
-      }
+      },
+        authRequired: true
     })
 
   .state('tab.account', {
@@ -119,7 +199,30 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
         templateUrl: 'templates/tab-account.html',
         controller: 'AccountCtrl'
       }
-    }
+    },
+        authRequired: true
+  })
+
+      .state('tab.twilio-client', {
+    url: '/twilio-client',
+    views: {
+      'tab-twilio-client': {
+        templateUrl: 'templates/tab-twilio-client.html',
+        controller: 'twilioTestCtrl'
+      }
+    },
+        authRequired: true
+  })
+
+    .state('tab.contacts', {
+    url: '/contacts',
+    views: {
+      'tab-contacts': {
+        templateUrl: 'templates/tab-contacts.html',
+        controller: 'ContactsCtrl'
+      }
+    },
+        authRequired: true
   })
 
 
