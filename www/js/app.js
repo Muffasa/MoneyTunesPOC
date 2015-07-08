@@ -8,7 +8,7 @@
 
 angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','ionic.service.push','ionic.service.core', 'starter.controllers', 'starter.services'])
 
-.run(function($ionicPlatform,$rootScope,$ionicLoading,Auth,User) {
+.run(function($ionicPlatform,$rootScope,$ionicLoading,$state,User) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -20,21 +20,34 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
       StatusBar.styleLightContent();
     }
         //reset Auth and local save
-    //if(User.gotAuthToken()||User.isAuth()){User.unauth();User.deleteLocalAuthToken();}
-    if(User.gotAuthToken()&&!User.isAuth()){
-      User.auth();
+   //if(User.gotAuthToken()||User.isAuth()){User.unauth();User.deleteLocalAuthToken();}
+
+
+    if(User.gotAuthToken()){
+      console.log("I have Auth Token!");
+      User.auth().then(function(user){
+        console.log("My number is:"+user.phone_number);
+
+      });
     }
+    else{
+      console.log("I dont have Auth Token..fresh start...");
+
+      User.unauth();
+    }
+
     if(User.isAuth()){
-      var user=User.getCurrentUser();
-      console.log("the current user after auth: " + user.phone_number);
+      User.getCurrentUser(function(user){
+              if(user)
+              console.log("the current user after auth: " + user.phone_number);
+              else
+                User.unauth();
+          
+      });
+
+      
     }
 
-
-    $rootScope.userEmail = null;
-    $rootScope.baseUrl = 'https://bucketlist-app.firebaseio.com/';
-    var authRef = new Firebase($rootScope.baseUrl);
-    //$rootScope.auth = $firebaseAuth(authRef);
- 
     $rootScope.show = function(text) {
       $rootScope.loading = $ionicLoading.show({
         content: text ? text : 'Loading..',
@@ -55,6 +68,14 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
         $rootScope.hide();
       }, 1999);
     };
+
+
+   /* $rootScope.userEmail = null;
+    $rootScope.baseUrl = 'https://bucketlist-app.firebaseio.com/';
+    var authRef = new Firebase($rootScope.baseUrl);
+    //$rootScope.auth = $firebaseAuth(authRef);
+ 
+
  
     $rootScope.logout = function() {
       $rootScope.auth.$logout();
@@ -77,7 +98,7 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
           $window.location.href = '#/auth/signin';
         }
       });
-    }
+    }*/
 
       
       
@@ -94,10 +115,22 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
 
       $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
           
-      if (toState.authRequired && !Auth.$getAuth()){ //Assuming the AuthService holds authentication logic
-        // User isn’t authenticated
-        $state.go("welcome");
-        event.preventDefault(); 
+      if (toState.authRequired){
+
+          if(!User.gotAuthToken()) {      
+            $state.go("welcome");
+            event.preventDefault(); 
+          }
+          else
+          {
+            if(!$rootScope.User)
+            {
+            User.auth().then(function(user)
+              {
+                console.log("user has token and conecting to the app, user:"+user.phone_number);
+              });
+            }
+          }
       }
     });
  
@@ -153,7 +186,7 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
   // setup an abstract state for the tabs directive
     .state('tab', {
     url: "/tab",
-  //  abstract: true,
+    abstract: true,
     templateUrl: "templates/tabs.html",
     authRequired: true
   })
@@ -220,6 +253,17 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
       'tab-contacts': {
         templateUrl: 'templates/tab-contacts.html',
         controller: 'ContactsCtrl'
+      }
+    },
+        authRequired: true
+  })
+
+   .state('tab.twilio-test', {
+    url: '/twilio-test',
+    views: {
+      'tab-twilio-test': {
+        templateUrl: 'templates/tab-twilio-test.html',
+        controller: 'TwilioTestCtrl'
       }
     },
         authRequired: true

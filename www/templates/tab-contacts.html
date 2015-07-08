@@ -1,5 +1,21 @@
 <ion-view view-title="Contacts">
+<ion-content class="row row-top padding">
+    <a class="button button-balanced" padding="true" ng-click="getContactList()">Get Real Contacts</a>
+
+    </ion-content>
   <ion-content>
+         <style>
+.scroll-content{
+  display: table !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+.scroll {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+</style>
     <ion-list>
       <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="contact in contacts" type="item-text-wrap" href="#/tab/contacts/{{contact.id}}">
 
@@ -8,10 +24,11 @@
         <!--<p>{{chat.lastText}}</p>-->
         <i class="icon ion-chevron-right icon-accessory"></i>
 
-        <ion-option-button class="button-assertive" ng-click="remove(chat)">
+        <ion-option-button class="button-assertive" ng-click="getContactList()">
           Delete
         </ion-option-button>
       </ion-item>
     </ion-list>
+
   </ion-content>
 </ion-view>

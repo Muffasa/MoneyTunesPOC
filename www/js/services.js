@@ -14,28 +14,50 @@ angular.module('starter.services', [])
     return $firebaseAuth(ref);
   }
 ])
+.factory("Ring", ["$cordovaMedia",
+  function($cordovaMedia) {
+   // var src = "/Assets/rington.mp3";
+   // var media = $cordovaMedia.newMedia(src).then(function(){
+   //   return media;
+   // },function(error){
+    //  console.log("error loading audio media");
+      return {};
+   // })
 
-.factory("User", ["$firebaseObject","$firebaseAuth",
-  function($firebaseObject,$firebaseAuth) {
+  }
+])
+
+.factory("User", ["$firebaseObject","$firebaseAuth","$rootScope","$q","$state",
+  function($firebaseObject,$firebaseAuth,$rootScope,$q,$state) {
     var ref = new Firebase("https://mtdemo.firebaseio.com");
     var userRef = new Firebase("https://mtdemo.firebaseio.com/users");
     var users = $firebaseObject(userRef);
     var Auth=$firebaseAuth(ref);
     var currentUserId=null;
     var currentUser=null;
-    var getCurrentUser =function(){
-        if(currentUser){
-          return currentUser;
-        }
-        else{ 
-             if(currentUserId){
-              
-                  currentUserRef = new Firebase("https://mtdemo.firebaseio.com/users/"+currentUserId);
-                  return $firebaseObject(currentUserRef);
+    var setCurrentUser =function(uid){
+         var d = $q.defer();
+                  currentUserRef = new Firebase("https://mtdemo.firebaseio.com/users/"+uid);
+                  var result = $firebaseObject(currentUserRef);
+                  result.$loaded().then(function(data){
+                    $rootScope.User = data;
+                    currentUser=data;
+                    d.resolve(data);
+                  });
+                  return d.promise;
 
-                  
-            }
+          
+      };
+    var getCurrentUser =function(callback){
+      if(typeof callback === 'function'){
+        if(currentUser)
+          callback(currentUser);    
+        if($rootScope.User)
+          callback($rootScope.User);
+        else
+            callback();   
           }
+          
       };
 
       var setUid = function(uid){
@@ -45,20 +67,24 @@ angular.module('starter.services', [])
 
     return{
       saveAuthTokenLocally: function(authToken){
-        if(!window.localStorage.getItem("authToken")){
+        if(!window.localStorage.getItem("authToken")||window.localStorage.getItem("authToken")=="user do no exist"){
           window.localStorage.setItem("authToken",authToken)
         }
       },
       deleteLocalAuthToken: function(){
         window.localStorage.removeItem("authToken");
+        window.localStorage.removeItem("uid");
+        $rootScope.user_phone_number=null;
+        $rootScope.User=null;
       },
       gotAuthToken:function(){
+
         return window.localStorage.getItem('authToken');
       },
       isAuth: function(){
          var authData = Auth.$getAuth();
          if(authData){
-          setUid(authData.uid);
+          setCurrentUser(authData.uid);
           return true;
          }
          else{
@@ -67,14 +93,27 @@ angular.module('starter.services', [])
 
       },
       auth: function(){
+        var d = $q.defer();
         Auth.$authWithCustomToken(window.localStorage.getItem('authToken')).then(function(authData){
-              setUid(authData.uid);
-        });
-        getCurrentUser();
+              setCurrentUser(authData.uid).then(function(user){
+                $state.go('tab.twilio-client');
+                d.resolve(user);
+              });
+          });
+        return d.promise;
+        
       },
       unauth: function(){
         Auth.$unauth();
+        currentUser =null;
+        currentUserId=null;
+        $rootScope.User=null;
+        window.localStorage.removeItem('uid');
+        window.localStorage.removeItem('authToken');
+        console.log("anauth!!!!");
+        $state.go('welcome');
       },
+
 
       getCurrentUser: getCurrentUser,
       setId:setUid
@@ -88,13 +127,17 @@ angular.module('starter.services', [])
 .factory('socket',function(socketFactory,$rootScope){
         
          var myIoSocket = io.connect('http://188.226.198.99:3000');
-
+        
           mySocket = socketFactory({
             ioSocket: myIoSocket
           });
-          mySocket.on('ConnectionAlive',function(){
-            $rootScope.SocketConnectionAlive=true;
-          });
+          if($rootScope.User){
+            mySocket.emit('identify',$rootScope.User.phone_number);
+          }
+          
+          mySocket.on('incomingCall',function(from){
+            console.log("incoming call from "+from);
+          })
 
         return mySocket;
     })
@@ -341,8 +384,7 @@ angular.module('starter.services', [])
   {"name":"Zambia","dial_code":"+260","code":"ZM"},
   {"name":"Zimbabwe","dial_code":"+263","code":"ZW"},
   {"name":"Åland Islands","dial_code":"+358","code":"AX"}];
-
-  return {
+return {
     all: function() {
       return JSON.parse(JSON.stringify(countries_data));
     },

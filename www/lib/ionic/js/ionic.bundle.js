@@ -23,6 +23,7 @@
 
 // Create global ionic obj and its namespaces
 // build processes may have already created an ionic obj
+window.Global={};
 window.ionic = window.ionic || {};
 window.ionic.views = {};
 window.ionic.version = '1.0.0';

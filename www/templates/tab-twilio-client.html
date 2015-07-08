@@ -1,11 +1,11 @@
-<ion-view class="has-header">
+<ion-view >
 <ion-content >
 
-<div class="bar bar-header">
-  <button class="button button-icon icon ion-navicon"></button>
-  <div class="h1 title">Header Buttons</div>
-  <button class="button button-clear button-positive">Edit</button>
-</div>
+<ion-nav-buttons>
+<button class="button" ng-click="doSomething()">
+        I'm a button on the primary of the navbar!
+      </button>
+</ion-nav-buttons>
 
   <span class="item item-input">
     <span class="input-label right"><i class="ion-android-call"></i></span>
@@ -14,7 +14,9 @@
     <a class="button button-clear icon-right ion-backspace" ng-click="removed();"> </a>
     
 </span>
-<ion-spinner icon="ripple" class="spinner-balanced"></ion-spinner>
+
+<ion-spinner icon="ripple" ng-show="incomingCall" class="spinner-balanced"></ion-spinner>
+
   <div class="row-top" >
    <style>
 .scroll-content{
@@ -30,7 +32,7 @@
 </style>
      <div class=" button-bar padding">
      <a class="button button-balanced" ng-click="openModal()">open</a>
-     <a class="button button-assertive" ng-click="closeModal()">close</a>
+     <a class="button button-assertive" ng-click="SoSPrompt()">Test Ring</a>
    </div>
   
   <div class="row-center" >

@@ -1,4 +1,11 @@
 {
   "name": "MoneyTunesPOC",
-  "app_id": "fe0f0dc6"
+  "app_id": "fe0f0dc6",
+  "browsers": [
+    {
+      "platform": "android",
+      "browser": "crosswalk",
+      "version": "12.41.296.5"
+    }
+  ]
 }

@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, $rootScope, $ionicUser, $ionicPush,socket) {
+.controller('DashCtrl', function($scope, $rootScope, $ionicUser, $ionicPush,socket,User) {
   // Identifies a user with the Ionic User service
   $scope.identifyUser = function() {
     console.log('Ionic User: Identifying with Ionic User service');
@@ -26,7 +26,10 @@ angular.module('starter.controllers', [])
 
   $scope.connect = function(){
     socket.emit('connecta','test');
-    socket.emit('identify','test');
+    User.getCurrentUser(function(user){
+      socket.emit('identify',user.phone_number);
+    })
+    
   };
 })
 
@@ -47,7 +50,7 @@ angular.module('starter.controllers', [])
 
 .controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
   $scope.chat = Chats.get($stateParams.chatId);
-})
+ })
 
 .controller('ContactsCtrl', function($scope,$cordovaContacts,Contacts) {
   
@@ -55,13 +58,13 @@ angular.module('starter.controllers', [])
     $scope.contacts = Contacts;
   
 
-  $scope.getContactList = function() {
+   $scope.getContactList = function() {
     $cordovaContacts.find({filter: ''}).then(function(result) {
         $scope.contacts = result;
     }, function(error) {
         console.log("ERROR: " + error);
     });
-}
+   }
 })
 
 .controller('LoginCtrl', function($scope,Auth) {
@@ -139,9 +142,10 @@ angular.module('starter.controllers', [])
  $scope.$on('$ionicView.beforeEnter', function() {
                   
               if(User.isAuth()){
-                    User.getCurrentUser();
                     $state.go("tab.twilio-client");
                   }
+
+                  console.log("no user session detected..welcome!");
  
        });
 
@@ -156,19 +160,22 @@ angular.module('starter.controllers', [])
       $scope.goToLoginState = function(){$state.go('login');}
 
       $scope.ConfirmNumber = function(number) {
-      var confirmPopup = $ionicPopup.confirm({
-        title: 'Confirmation',
-        template: 'Are you sure this is your phone number? an SMS will be send to this number: ' + number,
-        cancelText:'Cancel',
-        okText:'Send SMS'
 
-      });
+          var confirmPopup = $ionicPopup.confirm({
+            title: 'Confirmation',
+            template: 'Are you sure this is your phone number? an SMS will be send to this number: ' + number,
+            cancelText:'Cancel',
+            okText:'Send SMS'
+
+          });
+
       confirmPopup.then(function(res) {
         if(res) {
             $rootScope.show();
             socket.emit("MiniRegister", $scope.selectedCountry.dial_code+'-'+number);
 
             socket.on("MiniRegisterSuccess",function(){
+              $rootScope.user_phone_number=$scope.selectedCountry.dial_code+'-'+number;
               $rootScope.hide();
             $state.go('welcome-post-sms',{userPhoneNumber:$scope.selectedCountry.dial_code+'-'+number,country:$scope.selectedCountry.name});
             });
@@ -188,13 +195,16 @@ angular.module('starter.controllers', [])
 })
 .controller('WelcomePostCtrl',function($scope,$rootScope,$http,$state,$stateParams,$ionicUser,$ionicPush,$ionicPopup,$q,$cordovaDevice,Auth,User,Countries,socket){
 
-   $scope.fullnumber=$stateParams.userPhoneNumber;
+   
 
   $rootScope.$on('$cordovaPush:tokenReceived', function(event, data) {
    // alert("Successfully registered token " + data.token);
     console.log('Ionic Push: Got token ', data.token, data.platform);
     $scope.ionicPushToken = data.token;
+    console.log("cordovePush token:"+data.token+" Device uuid:"+$cordovaDevice.getUUID());
   });
+      $scope.fullnumber=$stateParams.userPhoneNumber;
+
 
  $scope.ConfirmSmsCode =function(user_code){
   $rootScope.show();
@@ -203,15 +213,12 @@ angular.module('starter.controllers', [])
     compeleteMiniRegistrationAndLogin().then(function(firebaseAuthToken){
       console.log("compeleteMiniRegistrationAndLogin resolved! firebase token:" +firebaseAuthToken);
       User.saveAuthTokenLocally(firebaseAuthToken);
-      User.auth();
-      Auth.$authWithCustomToken(window.localStorage.getItem("authToken")).then(function(authData) {
-          console.log("Logged in as:", authData);
-          $rootScope.hide();
-          $state.go('tab');
-        }).catch(function(error) {
-          console.error("Authentication failed:", error);
-          $rootScope.hide();
-        });
+      User.auth().then(function(user){
+        console.log("all set up, current user number:" +user.phone_number);
+        //$state.go('tab.twilio-client');
+        $rootScope.hide();
+      });
+      
 
     })
   },function(error){
@@ -304,7 +311,7 @@ angular.module('starter.controllers', [])
       socket.removeListener('WrongCode');
       console.log("smsconfirmedeventfromserver and his token:" +MyCustomToken);
       getTwilioToken().then(function(twilioToken){
- console.log("got twilio token token:" +twilioToken);
+      console.log("got twilio token token:" +twilioToken);
         $scope.twilioToken=twilioToken;
 
         ionicIdentifyUser().then(function(){
@@ -467,35 +474,62 @@ angular.module('starter.controllers', [])
     });
   }
 
+})
+.controller('twilioTestCtrl', function($scope,$rootScope,$state,$ionicPopup, $http,User,$ionicModal,Ring,socket,Countries) {
+            
+
+$scope.$on('$ionicView.beforeEnter', function() {
+              
+          User.getCurrentUser(function(user){
+
+                if(user)
+                Twilio.Device.setup(user.twilio_token);
+                else
+                {
+                  $state.go('welcome');
+                }
+              });
+ 
+       });
 
 
 
- })
-.controller('twilioTestCtrl', function($scope, $http,User,$ionicModal) {
-            var user = User.getCurrentUser();
+
             $scope.dialpadInput="";
 
-               user.$loaded().then(function(){
-                Twilio.Device.setup(user.twilio_token);
-              });
-                // Setup our Twilio device with the token.
+               
+                
+              
+                
+
+                $scope.testRing = function () {
+                  var src = "/Assets/rington.mp3";
+                  var media = new Media(src, null, null, mediaStatusCallback);
+                    media.play()
+               };
+            
+
 
             // Make a Twilio call.
             $scope.call = function (to) {
+              var addPrefix = "+972-"+to;
                Twilio.Device.connect({ // Connect our call.
                   CallerId:'+97243741132', // Your Twilio number (Format: +15556667777).
-                  callFrom: user.phone_number,
+                  callFrom: $rootScope.User.phone_number,
                   //PhoneNumber:'<Enter number to call here>',
-                  callTo:to // Number to call (Format: +15556667777).
+                  callTo:addPrefix // Number to call (Format: +15556667777).
                });
+               
+               socket.emit('outgoingCall',addPrefix);
             };
 
             $scope.answer = function(){
               Connection = Twilio.Device.connect({
                 CallerId:'+97243741132', 
-                AnswerQ:user.phone_number +'Q'    
+                AnswerQ:$rootScope.User.phone_number +'Q'    
                 
                  });
+              //Ring.stop();
             };
 
             // Hang up a Twilio call.
@@ -536,6 +570,118 @@ angular.module('starter.controllers', [])
             $scope.$on('modal.removed', function() {
               // Execute action
             });
+
+            $scope.IncomingCall=false;
+            socket.on("IncomingCall",function(from){
+              $scope.IncomingCall=true;
+            })
+
+
+
+
+
+         })
+
+.controller('TwilioTestCtrl', function($scope,$rootScope,$state,$ionicPopup, $http,User,$ionicModal,Ring,socket,Countries) {
+            
+
+$scope.$on('$ionicView.beforeEnter', function() {
+              
+          User.getCurrentUser(function(user){
+
+                if(user)
+                TwilioT.Device.setup(user.twilio_token);
+                else
+                {
+                  $state.go('welcome');
+                }
+              });
+ 
+       });
+
+
+
+
+            $scope.dialpadInput="";
+
+               
+                
+              
+                
+
+                $scope.testRing = function () {
+                  var src = "/Assets/rington.mp3";
+                  var media = new Media(src, null, null, mediaStatusCallback);
+                    media.play()
+               };
+            
+
+
+            // Make a Twilio call.
+            $scope.call = function (to) {
+              var addPrefix = "+972-"+to;
+               TwilioT.Device.connect({ // Connect our call.
+                  CallerId:'+97243741132', // Your Twilio number (Format: +15556667777).
+                  callFrom: $rootScope.User.phone_number,
+                  //PhoneNumber:'<Enter number to call here>',
+                  callTo:addPrefix // Number to call (Format: +15556667777).
+               });
+               
+               socket.emit('outgoingCall',addPrefix);
+            };
+
+            $scope.answer = function(){
+              Connection = TwilioT.Device.connect({
+                CallerId:'+97243741132', 
+                AnswerQ:$rootScope.User.phone_number +'Q'    
+                
+                 });
+              //Ring.stop();
+            };
+
+            // Hang up a Twilio call.
+            $scope.hangUp = function () {
+               TwilioT.Device.disconnectAll(); // Disconnect our call.
+            };
+
+            $scope.pressed = function (num){
+              $scope.dialpadInput+=num;
+            };
+
+            $scope.removed = function (){
+              $scope.dialpadInput=$scope.dialpadInput.slice(0,$scope.dialpadInput.length - 1);
+            }
+
+
+              $ionicModal.fromTemplateUrl('modals/dialpad-modal.html', {
+                  scope: $scope,
+                  animation: 'slide-in-up'
+                }).then(function(modal) {
+                  $scope.modal = modal;
+                });
+            $scope.openModal = function() {
+              $scope.modal.show();
+            };
+            $scope.closeModal = function() {
+              $scope.modal.hide();
+            };
+            //Cleanup the modal when we're done with it!
+            $scope.$on('$destroy', function() {
+              $scope.modal.remove();
+            });
+            // Execute action on hide modal
+            $scope.$on('modal.hidden', function() {
+              // Execute action
+            });
+            // Execute action on remove modal
+            $scope.$on('modal.removed', function() {
+              // Execute action
+            });
+
+            $scope.IncomingCall=false;
+            socket.on("IncomingCall",function(from){
+              $scope.IncomingCall=true;
+            })
 
 
 
