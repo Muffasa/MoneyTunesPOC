@@ -6,14 +6,14 @@
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
 
-angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','ionic.service.push','ionic.service.core', 'starter.controllers', 'starter.services','timer'])
+angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','ionic.service.push','ionic.service.core', 'starter.controllers', 'starter.services','starter.directives','timer'])
 
 .run(function($ionicPlatform,$rootScope,$ionicLoading,$ionicModal,$state,$cordovaSplashscreen,User) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     setTimeout(function() {
-        $cordovaSplashscreen.hide();
+        //$cordovaSplashscreen.hide();
     }, 3000);
 
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -23,7 +23,7 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
       // org.apache.cordova.statusbar required
       StatusBar.styleLightContent();
     }
-    window.DebugMode=true;
+    
 
     if(window.DebugMode)
     {
@@ -121,20 +121,15 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
         });*/ 
 
 
-$ionicModal.fromTemplateUrl('modals/incoming-call-modal.html', {
+/*$ionicModal.fromTemplateUrl('modals/incoming-call-modal.html', {
     scope: $rootScope,
     animation: 'slide-in-up',
-    backdropClickToClose: true,
-    hardwareBackButtonClose: true
+    backdropClickToClose: false,
+    hardwareBackButtonClose: false
   }).then(function(modal) {
     $rootScope.incomingCallModal = modal;
-    $rootScope.$on('modal.show',function(){
-      $rootScope.$broadcast('timer-start');
-    });
-    $rootScope.$on('incomingCallModal.show',function(){
-      $rootScope.$broadcast('timer-start');
-    });
-  });
+
+  });*/
 
 
       $rootScope.$on("incomingCall", function(event,from){
@@ -186,7 +181,7 @@ $ionicModal.fromTemplateUrl('modals/incoming-call-modal.html', {
 }])
 
 .config(function($stateProvider, $urlRouterProvider) {
-
+window.DebugMode=true;
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
   // Set up the various states which the app can be in.
@@ -220,6 +215,12 @@ $ionicModal.fromTemplateUrl('modals/incoming-call-modal.html', {
     url: '/call',
     templateUrl: 'templates/call.html',
     controller: 'callCtrl'
+    
+  })
+    .state('test', {//connection alive
+    url: '/test',
+    templateUrl: 'templates/test.html',
+    controller: 'testCtrl'
     
   })
 
@@ -316,7 +317,7 @@ $ionicModal.fromTemplateUrl('modals/incoming-call-modal.html', {
 
   // if none of the above states are matched, use this as the fallback
   if(window.DebugMode)
-  $urlRouterProvider.otherwise('/tab.dash');
+  $urlRouterProvider.otherwise('/test');
     else
   $urlRouterProvider.otherwise('/welcome');
 

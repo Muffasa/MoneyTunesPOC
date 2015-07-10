@@ -1,52 +1,9 @@
     <ion-modal-view>
-<audio src="./Assets/rington.mp3"  preload="auto" autoplay="true" loop="true" muted="true"></audio>
-<ion-header-bar class="bar bar-header bar-calm">
-          <h1 class="title">Incoming Call</h1>
-          <button class="button button-clear button-primary" ng-click="incomingCallModal.hide()">X</button>
-        </ion-header-bar>
-
-    <ion-pane>
-<div class="list card" style="top: 30%">
-
-  <div class="item item-avatar">
-    <img src="avatar.jpg">
-    <h2>Incoming Call From*callername*</h2>
-    <p>*caller number*</p>
-  </div>
-
-  <div class="item campain">
-    
-    <h3>*campaign name*</h3>
-    <timer  countdown="30" interval="1000">
-      <div class="progress progress-striped active {{displayProgressActive}}"> 
-        <p>Don't keep your friend wating for money!<p>
-        <p> but please do if thats your boss=] {{displayProgressActive}} <p>
-        <!--<div class="bar" style="min-width: 2em;width: {{progressBar}}%;"></div> -->
-      <progress max="100" value="{{progressBar}}">test</progress>
-      </div>
-
-      
-    </timer>
-    
-  </div>
-  
 
 
-  <div class="item tabs tabs-secondary ">
-    <a class="tab-item balanced" ng-tap="answer()">
-      <i class="icon ion-android-call"></i>
-      
-    </a>
-    <a class="tab-item calm" ng-tap="messege()">
-      <i class="icon ion-chatbox"></i>
-      
-    </a>
-    <a class="tab-item assertive" ng-tap="reject()">
-      <i class="icon ion-android-cancel"></i>
-      
-    </a>
-  </div>
+<incoming-call from ="{{from}}" campaign="{{currentCampaign}}" test="'lolz!'"></incoming-call>
 
-</div>
-    </ion-pane>
+
+
+
   </ion-modal-view>

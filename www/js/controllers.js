@@ -1,5 +1,10 @@
 angular.module('starter.controllers', [])
+.controller('testCtrl', function($scope,Users,Campaigns) {
 
+$scope.from = Users.get(0);
+$scope.currentCampaign= Campaigns.get(0);
+
+})
 .controller('DashCtrl', function($scope, $rootScope, $ionicUser, $ionicPush,$ionicModal,socket,User) {
   // Identifies a user with the Ionic User service
                 $ionicModal.fromTemplateUrl('modals/dialpad-modal.html', {

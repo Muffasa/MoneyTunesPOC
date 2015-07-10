@@ -1,0 +1,54 @@
+
+
+<ion-header-bar class="bar bar-header bar-calm">
+          <h1 class="title">Incoming Call</h1>
+          <button class="button button-clear button-primary" ng-click="reject()">X</button>
+        </ion-header-bar>
+
+    
+<!--<audio id="audio" src="./Assets/rington.mp3"  preload="none" autoplay="false" loop="true" controls></audio>-->
+
+
+
+<div class="list card" style="top: 30%">
+
+  <div class="item item-avatar">
+    <img src="{{From.face}}">
+    <h2>Incoming Call From {{From.name}}</h2>
+    <p>{{From.phone_number}}</p>
+  </div>
+
+  <div class="item campain">
+    
+    <h3>{{CurrentCampaign.name}}</h3>
+    <timer id="timer" countdown="14" interval="1000">
+      <div class="progress progress-striped active {{displayProgressActive}}"> 
+        <p>Don't keep your friend wating for money!<p>
+        <p> but please do if thats your boss=] {{displayProgressActive}}, {{progressBar}} <p>
+        <!--<div class="bar" style="min-width: 2em;width: {{progressBar}}%;"></div> -->
+      <progress max="100" value="{{progressBar}}">test progress</progress>
+      </div>
+    </timer>
+      
+    
+    
+  </div>
+  
+
+
+  <div class="item tabs tabs-secondary ">
+    <a class="tab-item balanced" ng-tap="answer()" >
+      <i class="icon ion-android-call"></i>
+      
+    </a>
+    <a class="tab-item calm" ng-tap="messege()">
+      <i class="icon ion-chatbox"></i>
+      
+    </a>
+    <a class="tab-item assertive" ng-tap="reject()" ng-click="reject()">
+      <i class="icon ion-android-cancel"></i>
+      
+    </a>
+  </div>
+
+</div>
