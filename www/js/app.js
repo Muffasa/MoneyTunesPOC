@@ -6,12 +6,16 @@
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
 
-angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','ionic.service.push','ionic.service.core', 'starter.controllers', 'starter.services'])
+angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','ionic.service.push','ionic.service.core', 'starter.controllers', 'starter.services','timer'])
 
-.run(function($ionicPlatform,$rootScope,$ionicLoading,$state,User) {
+.run(function($ionicPlatform,$rootScope,$ionicLoading,$ionicModal,$state,$cordovaSplashscreen,User) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
+    setTimeout(function() {
+        $cordovaSplashscreen.hide();
+    }, 3000);
+
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
     }
@@ -19,33 +23,36 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
       // org.apache.cordova.statusbar required
       StatusBar.styleLightContent();
     }
-        //reset Auth and local save
-   //if(User.gotAuthToken()||User.isAuth()){User.unauth();User.deleteLocalAuthToken();}
+    window.DebugMode=true;
 
-
-    if(User.gotAuthToken()){
-      console.log("I have Auth Token!");
-      User.auth().then(function(user){
-        console.log("My number is:"+user.phone_number);
-
-      });
+    if(window.DebugMode)
+    {
+      User.debugAuth();
     }
     else{
-      console.log("I dont have Auth Token..fresh start...");
+           if(User.gotAuthToken()){
+            console.log("I have Auth Token!");
+            User.auth().then(function(user){
+              console.log("My number is:"+user.phone_number);
 
-      User.unauth();
-    }
+            });
+          }
+          else{
+            console.log("I dont have Auth Token..fresh start...");
 
-    if(User.isAuth()){
-      User.getCurrentUser(function(user){
+            User.unauth();
+          }
+
+          if(User.isAuth()){
+            User.getCurrentUser(function(user){
               if(user)
               console.log("the current user after auth: " + user.phone_number);
               else
                 User.unauth();
           
-      });
-
-      
+            });
+           }
+  
     }
 
     $rootScope.show = function(text) {
@@ -111,10 +118,36 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
            
                      });  
 
-        });*/
+        });*/ 
+
+
+$ionicModal.fromTemplateUrl('modals/incoming-call-modal.html', {
+    scope: $rootScope,
+    animation: 'slide-in-up',
+    backdropClickToClose: true,
+    hardwareBackButtonClose: true
+  }).then(function(modal) {
+    $rootScope.incomingCallModal = modal;
+    $rootScope.$on('modal.show',function(){
+      $rootScope.$broadcast('timer-start');
+    });
+    $rootScope.$on('incomingCallModal.show',function(){
+      $rootScope.$broadcast('timer-start');
+    });
+  });
+
+
+      $rootScope.$on("incomingCall", function(event,from){
+        $rootScope.incomingCallModal.show();
+      });
 
       $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
           
+
+    if(!$rootScope.DebugMode)
+    {
+
+
       if (toState.authRequired){
 
           if(!User.gotAuthToken()) {      
@@ -132,6 +165,7 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
             }
           }
       }
+    }
     });
  
       });
@@ -182,13 +216,19 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
     templateUrl: 'templates/welcome/sing-in.html',
     controller: 'SingInCtrl'   
   })
+  .state('call', {//connection alive
+    url: '/call',
+    templateUrl: 'templates/call.html',
+    controller: 'callCtrl'
+    
+  })
 
   // setup an abstract state for the tabs directive
     .state('tab', {
     url: "/tab",
     abstract: true,
-    templateUrl: "templates/tabs.html",
-    authRequired: true
+    templateUrl: "templates/tabs.html"
+    
   })
 
   // Each tab has its own nav history stack:
@@ -200,9 +240,11 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
         templateUrl: 'templates/tab-dash.html',
         controller: 'DashCtrl'
       }
-    },
-        authRequired: true
+    }
+    
+        
   })
+
 
   .state('tab.chats', {
       url: '/chats',
@@ -273,6 +315,9 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
   ;
 
   // if none of the above states are matched, use this as the fallback
+  if(window.DebugMode)
+  $urlRouterProvider.otherwise('/tab.dash');
+    else
   $urlRouterProvider.otherwise('/welcome');
 
 });

@@ -4,6 +4,11 @@
 <ion-view view-title="Campaigns">
     <ion-content>
 
+  <ion-refresher
+    pulling-text="Pull to refresh..."
+    on-refresh="refreshCampaigns()">
+  </ion-refresher>
+
       <div class="list">
 
         <a ng-repeat="item in items" 

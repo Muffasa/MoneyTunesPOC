@@ -113,6 +113,13 @@ angular.module('starter.services', [])
         console.log("anauth!!!!");
         $state.go('welcome');
       },
+      debugAuth: function()
+      {
+        Auth.$authWithCustomToken("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2IjowLCJkIjp7InVpZCI6Ii1KdG9XN2ZVeFFjdVBwSGZJdm9QIn0sImlhdCI6MTQzNjQ3MzkyMX0.oEkOclaBEkonPHzPr8iuD2l1JKGp2Lxz6Hyyvd71sp4")
+        .then(function(user){
+          $state.go('tab.dash');
+        })
+      },
 
 
       getCurrentUser: getCurrentUser,
@@ -137,6 +144,8 @@ angular.module('starter.services', [])
           
           mySocket.on('incomingCall',function(from){
             console.log("incoming call from "+from);
+            setTimeout(function() {$rootScope.broadcast('incomingCall',from);}, 5000);
+            
           })
 
         return mySocket;

@@ -1,36 +1,44 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, $rootScope, $ionicUser, $ionicPush,socket,User) {
+.controller('DashCtrl', function($scope, $rootScope, $ionicUser, $ionicPush,$ionicModal,socket,User) {
   // Identifies a user with the Ionic User service
-  $scope.identifyUser = function() {
-    console.log('Ionic User: Identifying with Ionic User service');
+                $ionicModal.fromTemplateUrl('modals/dialpad-modal.html', {
+                                scope: $scope,
+                                animation: 'slide-in-down',
+                                backdropClickToClose: true,
+                                hardwareBackButtonClose: true
+                              }).then(function(modal) {
+                                $scope.dialpadModal = modal;
+                              });
 
-    var user = $ionicUser.get();
-    if(!user.user_id) {
-      // Set your user_id here, or generate a random one.
-      user.user_id = $ionicUser.generateGUID();
-    };
+               /* $ionicModal.fromTemplateUrl('modals/incoming-call-modal.html', {
+                  scope: $scope,
+                  animation: 'slide-in-up',
+                  backdropClickToClose: true,
+                                hardwareBackButtonClose: true
+                }).then(function(modal) {
+                  $scope.incomingCallModal = modal;
+                });*/
 
-    // Add some metadata to your user object.
-    angular.extend(user, {
-      name: 'Ionitron',
-      bio: 'I come from planet Ion'
-    });
+                $ionicModal.fromTemplateUrl('modals/ongoing-call-modal.html', {
+                  scope: $scope,
+                  animation: 'slide-in-up',
+                  backdropClickToClose: true,
+                                hardwareBackButtonClose: true
+                }).then(function(modal) {
+                  $scope.outgoingCallModal = modal;
+                });
 
-    // Identify your user with the Ionic User Service
-    $ionicUser.identify(user).then(function(){
-      $scope.identified = true;
-     // alert('Identified user ' + user.name + '\n ID ' + user.user_id);
-    });
+  $scope.showDailpad = function() {
+    $scope.dialpadModal.show();
+  };
+  $scope.showIncomingCall = function(){
+    $rootScope.incomingCallModal.show();
+  };
+  $scope.showOutgoingCall = function(){
+    $scope.outgoingCallModal.show();
   };
 
-  $scope.connect = function(){
-    socket.emit('connecta','test');
-    User.getCurrentUser(function(user){
-      socket.emit('identify',user.phone_number);
-    })
-    
-  };
 })
 
 .controller('ChatsCtrl', function($scope, Chats) {
@@ -139,15 +147,22 @@ angular.module('starter.controllers', [])
 
 .controller('WelcomeCtrl', function($scope,$rootScope,$state,$ionicPopup,$ionicUser,Auth,User, Countries,socket) {
 
- $scope.$on('$ionicView.beforeEnter', function() {
+/* $scope.$on('$ionicView.beforeEnter', function() {
+                 
+                 if($rootScope.DebugMode)
+                 {
                   
+                  $state.go("tab.dash")
+                 } 
+
+
               if(User.isAuth()){
                     $state.go("tab.twilio-client");
                   }
 
-                  console.log("no user session detected..welcome!");
+                 // console.log("no user session detected..welcome!");
  
-       });
+       });*/
 
       $scope.countries = Countries.all();
       $scope.selectedCountry= $scope.countries[102];
@@ -546,30 +561,7 @@ $scope.$on('$ionicView.beforeEnter', function() {
             }
 
 
-              $ionicModal.fromTemplateUrl('modals/dialpad-modal.html', {
-                  scope: $scope,
-                  animation: 'slide-in-up'
-                }).then(function(modal) {
-                  $scope.modal = modal;
-                });
-            $scope.openModal = function() {
-              $scope.modal.show();
-            };
-            $scope.closeModal = function() {
-              $scope.modal.hide();
-            };
-            //Cleanup the modal when we're done with it!
-            $scope.$on('$destroy', function() {
-              $scope.modal.remove();
-            });
-            // Execute action on hide modal
-            $scope.$on('modal.hidden', function() {
-              // Execute action
-            });
-            // Execute action on remove modal
-            $scope.$on('modal.removed', function() {
-              // Execute action
-            });
+             
 
             $scope.IncomingCall=false;
             socket.on("IncomingCall",function(from){
@@ -688,6 +680,26 @@ $scope.$on('$ionicView.beforeEnter', function() {
 
 
          })
+
+.controller('callCtrl', function($scope,socket) {
+
+      $ionicModal.fromTemplateUrl('modals/incoming-call-modal.html', {
+                  scope: $scope,
+                  animation: 'slide-in-up'
+                }).then(function(modal) {
+                  $scope.incomingCallModal = modal;
+                });
+
+  socket.on('incomingCall',function(from){
+            //if user.contacts.find(cont=> cont.phoneNumber==from || cont=> cont.phoneNumber.convert()==from)
+
+              $scope.fromNumber=from.phone_number;
+              $scope.fromName=from.userName;
+              $scope.incomingCallModal.show();
+          });
+  $scope.call = function(to){}
+  
+})
 
 .controller('AccountCtrl', function($scope) {
   $scope.user = Global.getCurrentUser;
