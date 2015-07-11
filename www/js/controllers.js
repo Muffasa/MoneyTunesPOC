@@ -1,6 +1,11 @@
 angular.module('starter.controllers', [])
-.controller('testCtrl', function($scope,Users,Campaigns) {
+.controller('testCtrl', function($scope,Users,Campaigns,Weather) {
 
+ Weather.getCurrentWeather(32.00,34.00).then(function(res){
+  var currentInF = res.data.currently.apparentTemperature;
+  $scope.currentTemp = (currentInF-32)/1.800;
+  console.log("Weather test, response on fixed location: "+String($scope.currentTemp));
+})
 $scope.from = Users.get(0);
 $scope.currentCampaign= Campaigns.get(0);
 

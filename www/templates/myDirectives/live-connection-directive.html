@@ -1,0 +1,43 @@
+<ion-view>
+<ion-content>
+
+
+  <h1 class="title">Incoming Call</h1>
+          
+
+
+  <div class="list card">
+
+
+
+  <div class="item item-body">
+    <img class="full-image" src="{{caller.fullimg}}">
+    <div>
+     <timer start-time="1357020000000">{{minutes|00}}:{{seconds|00}}</timer>
+    </div>
+  </div>
+
+    <div class="item tabs tabs-secondary">
+    <a class="tab-item " ng-tap="speaker()">
+      <i class="icon ion-android-microphone"></i>
+      
+    </a>
+    <a class="tab-item " ng-tap="popupDialpad()">
+      <i class="icon ion-ios-keypad"></i>
+      
+    </a>
+    <a class="tab-item assertive" ng-tap="hangup()">
+      <i class="icon ion-close-circled"></i>
+      
+    </a>
+  </div>
+
+</div>
+  
+
+
+
+
+      
+</ion-content>
+</ion-view>

@@ -1,19 +1,19 @@
 angular.module('starter.services', [])
 
-.factory('UserInfo', function() {
-    var userInfo = {};
+.factory('Weather', ['$q', '$http', 
+  function($q,  $http) {
+  var url = 'https://api.forecast.io/forecast/' + '803fccd23763a6555da6b83cbc7a2a4f' + '/';
 
 
-    return userInfo;
-})
 
-
-.factory("Auth", ["$firebaseAuth",
-  function($firebaseAuth) {
-    var ref = new Firebase("https://mtdemo.firebaseio.com");
-    return $firebaseAuth(ref);
+  return {
+    //getAtLocation: function(lat, lng) {
+    getCurrentWeather: function(lat, lng) {
+      return $http.jsonp(url + lat + ',' + lng + '?callback=JSON_CALLBACK');
+    }
   }
-])
+}])
+
 .factory('MediaSrv', function($q, $ionicPlatform, $window){
   window.Media = function(src, mediaSuccess, mediaError, mediaStatus){
         // src: A URI containing the audio content. (DOMString)
@@ -104,6 +104,13 @@ angular.module('starter.services', [])
 
   return service;
 })
+
+.factory("Auth", ["$firebaseAuth",
+  function($firebaseAuth) {
+    var ref = new Firebase("https://mtdemo.firebaseio.com");
+    return $firebaseAuth(ref);
+  }
+])
 
 .factory("User", ["$firebaseObject","$firebaseAuth","$rootScope","$q","$state",
   function($firebaseObject,$firebaseAuth,$rootScope,$q,$state) {

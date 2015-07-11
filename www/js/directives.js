@@ -9,6 +9,19 @@ angular.module('starter.directives', [])
     
   };
 })
+.directive('liveConnection',['$state','$rootScope',function($state,$rootScope) {
+  return {
+
+    restrict: 'E',
+    templateUrl: 'templates/myDirectives/live-connection-directive.html',
+      controller: function($scope){
+        alert("work?");
+      }
+
+
+    }
+ 
+}])
 .directive('incomingCall',['$state','$rootScope',function($state,$rootScope) {
   return {
 
@@ -22,7 +35,7 @@ angular.module('starter.directives', [])
 
     },
 
-    controller: function ($scope,$rootScope,$state,MediaSrv){
+    controller: function ($scope,$rootScope,$state,MediaSrv,socket){
       
       MediaSrv.loadMedia('./Assets/rington.mp3').then(function(media)
       {
@@ -44,10 +57,11 @@ angular.module('starter.directives', [])
                 CallerId:'+97243741132', 
                 AnswerQ:$rootScope.User.phone_number +'Q'  
                 });
+              $scope.rington.stop();
 
                 $state.go('live-connection'); 
-                $rootScope.incomingCallModal.hide(); 
-                $rootScope.incomingCallModal.destroy();             
+               // $rootScope.incomingCallModal.hide(); 
+                //$rootScope.incomingCallModal.destroy();             
       };
       $scope.reject = function(){
         $scope.rington.stop();
