@@ -1,0 +1,17 @@
+  <ion-view view-title="Application Users">
+  <ion-content>
+
+    <ion-list>
+      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="contact in contacts" type="item-text-wrap" href="#/tab/users/{{user.id}}">
+
+        <img ng-src="{{user.face}}">
+        <h2>{{user.phone_number}}</h2>
+        
+        <i class="icon ion-chevron-right icon-accessory"></i>
+
+
+      </ion-item>
+    </ion-list>
+
+  </ion-content>
+</ion-view>

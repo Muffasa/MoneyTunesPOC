@@ -1,0 +1,43 @@
+
+  <h1 class="title">Ongoing Call</h1>
+          
+
+
+  <div class="list card">
+
+
+
+  <div class="item item-body">
+    <h2>{{callerUser.name}}</h2>
+   <!-- <img class="full-image" src="{{callerUser.face}}">-->
+    
+     <timer autostart="false">{{minutes}}:{{seconds}}</timer>
+    
+  </div>
+
+
+
+    <div class="item tabs tabs-secondary">
+    <a class="tab-item " ng-click="speaker()">
+      <i class="icon ion-android-microphone" ng-class="{'icon ion-android-microphone-off':micOn,'icon ion-android-microphone':!micOn}"></i>
+      
+    </a>
+    <a class="tab-item " ng-click="toggleDialpad()">
+      <i class="icon ion-ios-keypad-outline" ng-class="{'icon ion-ios-keypad-outline':!dialpadShow,'icon ion-ios-keypad':dialpadShow}" ></i>
+      
+    </a>
+    <a class="tab-item assertive" ng-tap="hangup()">
+      <i class="icon ion-close-circled"></i>
+      
+    </a>
+  </div>
+
+    <div class="item" ng-show="showForm">
+  <input type="tel" ng-model="userInput" focus-me="focusInput" > {{ myInput }}
+</div>
+
+</div>
+  
+
+
+

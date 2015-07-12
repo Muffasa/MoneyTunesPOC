@@ -1,0 +1,40 @@
+    <ion-modal-view>
+
+<ion-header-bar class="bar bar-header bar-positive">
+          <h1 class="title">Outgoinging Call</h1>
+          <button class="button button-clear button-primary" ng-click="outgoingCallModal.hide()">X</button>
+        </ion-header-bar>
+
+<ion-pane>
+
+  <div class="list card">
+
+
+
+  <div class="item item-body">
+    <img class="full-image" src="{{caller.fullimg}}">
+    <div>
+     <timer start-time="1357020000000">{{minutes}}:{{seconds}}</timer>
+    </div>
+  </div>
+
+    <div class="item tabs tabs-secondary">
+    <a class="tab-item " href="#">
+      <i class="icon ion-android-microphone"></i>
+      
+    </a>
+    <a class="tab-item " href="#">
+      <i class="icon ion-ios-keypad"></i>
+      
+    </a>
+    <a class="tab-item " href="#">
+      <i class="icon ion-volume-mute"></i>
+      
+    </a>
+  </div>
+
+</div>
+  
+
+    </ion-pane>
+        </ion-modal-view>

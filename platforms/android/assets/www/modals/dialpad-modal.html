@@ -1,0 +1,45 @@
+<ion-modal-view class="qqqqq" >
+
+ <style>
+         .qqqqq {
+          margin-top:100%;
+          margin-bottom:10%;
+         }
+        </style>
+<ion-header-bar class="bar bar-header bar-positive">
+          <h1 class="title">Dialpad</h1>
+          <button class="button button-clear button-primary" ng-click="dialpadModal.hide()">X</button>
+        </ion-header-bar>
+  
+    <div class="dialpad" >
+             <style>
+         .dialpad {
+          margin-top:10%;
+          //margin-bottom:10%;
+         }
+        </style>
+
+              <div class=" button-bar">
+               <a class="button button-positive" ng-click="pressed('1')">1</a>
+               <a class="button button-positive" ng-click="pressed('2')">2</a>
+               <a class="button button-positive" ng-click="pressed('3')">3</a>
+             </div>
+              <div class=" button-bar">
+               <a class="button button-positive" ng-click="pressed('4')">4</a>
+               <a class="button button-positive" ng-click="pressed('5')">5</a>
+               <a class="button button-positive" ng-click="pressed('6')">6</a>
+             </div>
+             <div class=" button-bar">
+               <a class="button button-positive" ng-click="pressed('7')">7</a>
+               <a class="button button-positive" ng-click="pressed('8')">8</a>
+               <a class="button button-positive" ng-click="pressed('9')">9</a>
+             </div>
+             <div class=" button-bar">
+               <a class="button " ng-click="pressed('*')">*</a>
+               <a class="button button-positive" ng-click="pressed('0')">0</a>
+               <a class="button " ng-click="pressed('#')">#</a>
+             </div>
+      </div>
+  
+</ion-modal-view>
+

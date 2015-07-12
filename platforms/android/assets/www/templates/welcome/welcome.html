@@ -1,0 +1,48 @@
+
+<ion-view title="Mooney Tunes" >
+    <ion-content padding="true" class="has-header">
+       <style>
+.scroll-content{
+  display: table !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+.scroll {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+</style>
+
+        <div>
+            <p>Welcome To Money Tunes!</p>
+
+            <p>What is your country?</p>
+        </div>
+          <div class="list">
+
+              <label class="item item-input item-select">
+                <div class="input-label">
+                  Country
+                </div>
+
+                <select ng-model="selectedCountry" ng-options=" country.name for country in countries" >
+                </select>
+              </label>
+
+            </div>
+        <div>
+            <p>What's your phone number?</p>
+        </div>
+        <label class="item item-input">
+            <span class="input-label">{{selectedCountry.dial_code}}</span>
+            <input maxlenght="10" minlenght="10" type="tel" name="numberTE" ng-model="usernumber" placeholder="Your phone number" required> 
+        </label>
+        <button on-touch="ConfirmNumber(usernumber)" class="button button-block button-balanced">Start</button>
+        
+        <div>
+            <p>Allredy a member? Login!</p>
+        </div>
+        <button on-touch="goToLoginState()" class="button button-block button-assertive">Login</button>
+    </ion-content>
+</ion-view>

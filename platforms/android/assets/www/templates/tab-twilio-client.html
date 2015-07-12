@@ -1,0 +1,68 @@
+<ion-view >
+<ion-content >
+
+<ion-nav-buttons>
+<button class="button" ng-click="doSomething()">
+        I'm a button on the primary of the navbar!
+      </button>
+</ion-nav-buttons>
+
+  <span class="item item-input">
+    <span class="input-label right"><i class="ion-android-call"></i></span>
+    
+  <input type="text" ng-model="dialpadInput">
+    <a class="button button-clear icon-right ion-backspace" ng-click="removed();"> </a>
+    
+</span>
+
+<ion-spinner icon="ripple" ng-show="incomingCall" class="spinner-balanced"></ion-spinner>
+
+  <div class="row-top" >
+   <style>
+.scroll-content{
+  display: table !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+.scroll {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+</style>
+     <div class=" button-bar padding">
+     <a class="button button-balanced" ng-click="openModal()">open</a>
+     <a class="button button-assertive" ng-click="SoSPrompt()">Test Ring</a>
+   </div>
+  
+  <div class="row-center" >
+     <div class=" button-bar padding">
+     <a class="button button-calm" ng-click="call(dialpadInput)">Call</a>
+     <a class="button button-balanced" ng-click="answer()">Answer</a>
+     <a class="button button-assertive" ng-click="hangUp()">Hung Up</a>
+   </div>
+
+     <div class=" button-bar">
+     <a class="button button-positive" ng-click="pressed('1')">1</a>
+     <a class="button button-positive" ng-click="pressed('2')">2</a>
+     <a class="button button-positive" ng-click="pressed('3')">3</a>
+   </div>
+     <div class=" button-bar">
+     <a class="button button-positive" ng-click="pressed('4')">4</a>
+     <a class="button button-positive" ng-click="pressed('5')">5</a>
+     <a class="button button-positive" ng-click="pressed('6')">6</a>
+   </div>
+      <div class=" button-bar">
+     <a class="button button-positive" ng-click="pressed('7')">7</a>
+     <a class="button button-positive" ng-click="pressed('8')">8</a>
+     <a class="button button-positive" ng-click="pressed('9')">9</a>
+   </div>
+       <div class=" button-bar">
+     <a class="button " ng-click="pressed('*')">*</a>
+     <a class="button button-positive" ng-click="pressed('0')">0</a>
+     <a class="button " ng-click="pressed('#')">#</a>
+   </div>
+</div>
+
+  </ion-content>
+</ion-view>

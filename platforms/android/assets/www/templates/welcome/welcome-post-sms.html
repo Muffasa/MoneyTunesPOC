@@ -1,0 +1,21 @@
+<ion-view title="Mooney Tunes" >
+    <ion-content padding="true" class="has-header">
+      <div class="bar bar-header">
+        <h1 class="title">Insert Code</h1>
+      </div>
+
+        <div>
+            <p>A 4 digit code has been send to {{fullnumber}}.</p>
+        </div>
+
+        <div>
+            <p>Enter the code here:</p>
+        </div>
+        <label class="item item-input">
+            <span class="input-label">Code:</span>
+            <input type="tel" name="numberTE" ng-model="userCodeInput" placeholder="Your code" required> </input>
+        </label>
+        <button on-touch="ConfirmSmsCode(userCodeInput)" class="button button-block button-balanced">Start</button>
+          <button on-touch="ResendSms(userCodeInput)" class="button button-block button-calm">Send SMS again</button>
+    </ion-content>
+</ion-view>

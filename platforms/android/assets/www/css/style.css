@@ -1,0 +1,72 @@
+/* Empty. Add your own CSS if you like */
+.app-logo{
+  background-image:url('../Assets/logo2.png');
+  background-repeat: no-repeat;
+    background-position: 90%;
+    border-radius: 50%;
+    width: auto;
+    height: auto;
+    max-width:200px;
+    max-height: 200px;
+}
+.ng-invalid.ng-dirty{
+  border-color: #FA787E;
+}
+.ng-valid.ng-dirty{
+  border-color: #78FA89;
+}
+
+.bottom-align{
+  position: absolute; bottom: 0px; width: 100%
+}
+.popup-title {
+  //color: #78FA89 !important;
+}
+.popup{
+  // width:100px
+}
+.popup-body{
+  // background: blue !important;
+  // color:#fff !important;
+  // font-size:24px !important;
+
+//  padding: 20px;
+//  overflow: scroll;
+//  text-align: justify
+}
+
+.popup-buttons {
+
+}
+
+/*.scroll-content {
+  display: table !important;
+  width: 100% !important;
+  height: 100% !important;
+
+}
+.scroll {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+
+
+.Aligner {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.Aligner-item {
+  max-width: 80% !important;
+}
+
+.Aligner-item--top {
+  align-self: flex-start !important;
+}
+
+.Aligner-item--bottom {
+  align-self: flex-end !important;
+  
+}*/
