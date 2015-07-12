@@ -2,7 +2,7 @@
   <ion-content>
 
     <ion-list>
-      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="contact in contacts" type="item-text-wrap" href="#/tab/users/{{user.id}}">
+      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="user in allAppUsers" type="item-text-wrap" href="#/tab/users/{{user.id}}">
 
         <img ng-src="{{user.face}}">
         <h2>{{user.phone_number}}</h2>

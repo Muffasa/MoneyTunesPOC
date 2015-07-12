@@ -1,7 +1,16 @@
 angular.module("directives.controllers",[])
 
-.controller("incomingCallCtrl",function ($scope,$rootScope,$state,MediaSrv,socket){
+.controller("incomingCallCtrl",function ($scope,$rootScope,$state,$http,MediaSrv,socket){
       
+              if(window.DebugMode)
+              {
+                $http.get('http://188.226.198.99:3000/twilioTokenGen/'+$rootScope.MainUser.phone_number)
+             .success(function(twilioToken){
+                TwilioT.Device.setup(twilioToken);
+              });
+
+        }
+
       MediaSrv.loadMedia('./Assets/rington.mp3').then(function(media)
       {
         $scope.rington=media;
@@ -23,7 +32,7 @@ angular.module("directives.controllers",[])
        
               $rootScope.connection = TwilioT.Device.connect({
                 CallerId:'+97243741132', 
-                AnswerQ:$rootScope.User.phone_number +'Q'  
+                AnswerQ:$rootScope.MainUser.phone_number +'Q'  
                 });
               $scope.rington.stop(); 
               $rootScope.incomingCallModal.hide();
@@ -39,7 +48,7 @@ angular.module("directives.controllers",[])
         socket.emit("rejectCall");
       };
       $scope.messege = function(){
-        //new modal  with templates messeges and text box
+        //new modal  with templat es messeges and text box
       };
 
       $rootScope.$on("incomingCallModal.show",function(){

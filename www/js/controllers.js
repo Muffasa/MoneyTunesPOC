@@ -74,7 +74,7 @@ angular.module('starter.controllers', [])
 
      $scope.hangup = function(){
       TwilioT.Device.disconnectAll();
-      $ionicHistory.goBack();
+      $ionicHistory.goBack(); 
 
      }   
 
@@ -124,7 +124,7 @@ angular.module('starter.controllers', [])
 
 
 
-               $ionicModal.fromTemplateUrl('modals/incoming-call-modal.html', {
+              /* $ionicModal.fromTemplateUrl('modals/incoming-call-modal.html', {
               scope: $rootScope,
               animation: 'slide-in-up',
               backdropClickToClose: false,
@@ -132,7 +132,7 @@ angular.module('starter.controllers', [])
             }).then(function(modal) {
               $rootScope.incomingCallModal = modal;
 
-            });
+            });*/
 
 
 })
@@ -239,22 +239,26 @@ angular.module('starter.controllers', [])
 
 .controller('WelcomeCtrl', function($scope,$rootScope,$state,$ionicPopup,$ionicUser,Auth,User, Countries,socket) {
 
-/* $scope.$on('$ionicView.beforeEnter', function() {
+ $scope.$on('$ionicView.beforeEnter', function() {
                  
-                 if($rootScope.DebugMode)
+                 if(window.DebugMode)
                  {
                   
-                  $state.go("tab.dash")
+                  $state.go("tab.contacts")
                  } 
+                 else{
+
+
 
 
               if(User.isAuth()){
-                    $state.go("tab.twilio-client");
+                    $state.go("tab.contacts");
                   }
 
                  // console.log("no user session detected..welcome!");
+               }
  
-       });*/
+       });
 
 $scope.enterAsOhad = function(){
 
@@ -354,7 +358,7 @@ $scope.enterAsOhad = function(){
   var d = $q.defer();
         createFirebaseUser({
         phone_number: $stateParams.userPhoneNumber,
-        //on production uuid:$cordovaDevice.getUUID()
+        device_uuid:$cordovaDevice.getUUID(),
         country: Countries.getByDialCode($stateParams.userPhoneNumber.slice(0,$stateParams.userPhoneNumber.indexOf('-'))),
         ionic_push_token: $scope.ionicPushToken,
         twilio_token: $scope.twilioToken
@@ -599,7 +603,9 @@ $scope.enterAsOhad = function(){
             
 
   $scope.$on('$ionicView.beforeEnter', function() {
-              
+              if(!window.DebugMode){
+
+
           User.getCurrentUser(function(user){
 
                 if(user)
@@ -609,6 +615,7 @@ $scope.enterAsOhad = function(){
                   $state.go('welcome');
                 }
               });
+        }
  
        });
 
@@ -684,7 +691,16 @@ $scope.enterAsOhad = function(){
 
 $scope.$on('$ionicView.beforeEnter', function() {
               
-          User.getCurrentUser(function(user){
+              if(window.DebugMode)
+              {
+                $http.get('http://188.226.198.99:3000/twilioTokenGen/'+$rootScope.MainUser.phone_number)
+             .success(function(twilioToken){
+                TwilioT.Device.setup(twilioToken);
+              });
+
+        }
+        else{
+                    User.getCurrentUser(function(user){
 
                 if(user)
                 TwilioT.Device.setup(user.twilio_token);
@@ -693,6 +709,7 @@ $scope.$on('$ionicView.beforeEnter', function() {
                   $state.go('welcome');
                 }
               });
+        }
  
        });
 
@@ -723,7 +740,7 @@ MediaSrv.loadMedia('./Assets/rington.mp3').then(function(media)
               var addPrefix = "+972-"+to;
                $rootScope.connection=TwilioT.Device.connect({ // Connect our call.
                   CallerId:'+97243741132', // Your Twilio number (Format: +15556667777).
-                  callFrom: $rootScope.User.phone_number,
+                  callFrom: $rootScope.MainUser.phone_number,
                   //PhoneNumber:'<Enter number to call here>',
                   callTo:addPrefix // Number to call (Format: +15556667777).
                });
@@ -789,6 +806,19 @@ MediaSrv.loadMedia('./Assets/rington.mp3').then(function(media)
 
 
 
-.controller('AccountCtrl', function($scope) {
-  $scope.user = Global.getCurrentUser;
+.controller('AccountCtrl', function($scope,$rootScope,socket) {
+  
+$scope.toggleOnline = false;
+$scope.isOnline= "Offline";
+
+  $scope.connect=function(){
+    $scope.toggleOnline=!$scope.toggleOnline;
+    if($scope.toggleOnline)
+    socket.emit("identify",$rootScope.MainUser.phone_number);
+
+  };
+
+  socket.on('identified',function(){
+    $scope.isOnline = "Online";
+  })
 });

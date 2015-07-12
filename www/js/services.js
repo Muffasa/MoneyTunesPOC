@@ -51,7 +51,7 @@ angular.module('starter.services', [])
           // Stop playing an audio file.
           stop: function(){ sound.pause(); if(mediaSuccess){mediaSuccess();} } // TODO
         };
-};
+ };
   var service = {
     loadMedia: loadMedia,
     getStatusMessage: getStatusMessage,
@@ -125,7 +125,7 @@ angular.module('starter.services', [])
                   currentUserRef = new Firebase("https://mtdemo.firebaseio.com/users/"+uid);
                   var result = $firebaseObject(currentUserRef);
                   result.$loaded().then(function(data){
-                    $rootScope.User = data;
+                    $rootScope.MainUser = data;
                     currentUser=data;
                     d.resolve(data);
                   });
@@ -181,7 +181,7 @@ angular.module('starter.services', [])
         var d = $q.defer();
         Auth.$authWithCustomToken(window.localStorage.getItem('authToken')).then(function(authData){
               setCurrentUser(authData.uid).then(function(user){
-                $state.go('tab.twilio-client');
+                $state.go('tab.account');
                 d.resolve(user);
               });
           });
@@ -202,7 +202,7 @@ angular.module('starter.services', [])
       {
         Auth.$authWithCustomToken("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2IjowLCJkIjp7InVpZCI6Ii1KdG9XN2ZVeFFjdVBwSGZJdm9QIn0sImlhdCI6MTQzNjQ3MzkyMX0.oEkOclaBEkonPHzPr8iuD2l1JKGp2Lxz6Hyyvd71sp4")
         .then(function(user){
-          //$state.go('tab.dash');
+          $state.go("tab.contacts");
         })
       },
 
@@ -223,8 +223,8 @@ angular.module('starter.services', [])
           mySocket = socketFactory({
             ioSocket: myIoSocket
           });
-          if($rootScope.User){
-            mySocket.emit('identify',$rootScope.User.phone_number);
+          if($rootScope.MainUser){
+            mySocket.emit('identify',$rootScope.MainUser.phone_number);
           }
           
           mySocket.on('incomingCall',function(fromUser){
@@ -515,6 +515,14 @@ return {
       for (var i = 0; i < countries_data.length; i++) {
         if (countries_data[i].dial_code == prefix) {
           return countries_data[i].name;
+        }
+      }
+      return null;
+    },
+    getPrefixByName: function(name){
+      for (var i = 0; i < countries_data.length; i++) {
+        if (countries_data[i].name == name) {
+          return countries_data[i].dial_code;
         }
       }
       return null;

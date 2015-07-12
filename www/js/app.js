@@ -28,6 +28,15 @@ angular.module('MTPOC', ['directives.controllers','entities.controllers','ionic'
     if(window.DebugMode)
     {
       User.debugAuth();
+                   $rootScope.MainUser={
+                                     country:"Israel",
+                                     ionic_push_token:"DEV-329ccea3-5182-4f4a-9681-83a6a9028a12",
+                                     phone_number: "+972-0544637999",
+                                     propName: "eyJ0eXAiOi",                                     
+                                     twilio_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6InNjb3BlOmNsaWVudDppbmNvbWluZz9jbGllbnROYW1lPSUyQjk3Mi0wNTQ0NjM3OTk5IHNjb3BlOmNsaWVudDpvdXRnb2luZz9hcHBTaWQ9QVAxY2FkZjUzOWE4M2QzNjU2MmJkZDI2OGJkOTZiODkwMyZjbGllbnROYW1lPSUyQjk3Mi0wNTQ0NjM3OTk5IiwiaXNzIjoiQUMxM2M4YmM1Y2RlNTYxM2M3MDZjZGU2NjM4NjY1ZDJkYiIsImV4cCI6MTQzNjcxMDE5M30.gJDwID4NM7PzvjQJ4ZzR1zF5qBcogtso5dd6FX3mpwU",//irelevant build new one on enter
+                                     uid: "-Ju1NhqCQ2NLATxQZ-ER"
+
+                                    };  
     }
     else{
            if(User.gotAuthToken()){
@@ -65,6 +74,7 @@ angular.module('MTPOC', ['directives.controllers','entities.controllers','ionic'
       });
     };
  
+ 
     $rootScope.hide = function() {
       $ionicLoading.hide();
     };
@@ -91,6 +101,8 @@ angular.module('MTPOC', ['directives.controllers','entities.controllers','ionic'
                                       phone_number: '+972-0544446644',
                                       face: 'https://pbs.twimg.com/profile_images/514549811765211136/9SgAuHeY.png'
                                     };
+
+                    
                //////
 
    /* $rootScope.userEmail = null;
@@ -147,28 +159,28 @@ angular.module('MTPOC', ['directives.controllers','entities.controllers','ionic'
       $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
           
 
-    if(!$rootScope.DebugMode)
-    {
-
-
-      if (toState.authRequired){
-
-          if(!User.gotAuthToken()) {      
-            $state.go("welcome");
-            event.preventDefault(); 
-          }
-          else
+          if(!window.DebugMode)
           {
-            if(!$rootScope.User)
-            {
-            User.auth().then(function(user)
-              {
-                console.log("user has token and conecting to the app, user:"+user.phone_number);
-              });
+
+
+            if (toState.authRequired){
+
+                if(!User.gotAuthToken()) {      
+                  $state.go("welcome");
+                  event.preventDefault(); 
+                }
+                else
+                {
+                  if(!$rootScope.MainUser)
+                  {
+                  User.auth().then(function(user)
+                    {
+                      console.log("user has token and conecting to the app, user:"+user.phone_number);
+                    });
+                  }
+                }
             }
           }
-      }
-    }
     });
  
       });
@@ -193,8 +205,8 @@ angular.module('MTPOC', ['directives.controllers','entities.controllers','ionic'
     $ionicConfigProvider.navBar.alignTitle('center');
 })
 .config(function($stateProvider, $urlRouterProvider) {
-window.DebugMode=false;
-  // Ionic uses AngularUI Router which uses the concept of states
+window.DebugMode=true;
+  // Ionic uses AngularUI Ro uter which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
   // Set up the various states which the app can be in.
   // Each state's controller can be found in controllers.js
@@ -308,6 +320,17 @@ window.DebugMode=false;
       'tab-contacts': {
         templateUrl: 'templates/tab-contacts.html',
         controller: 'contactsCtrl'
+      }
+    },
+        authRequired: true
+  })
+
+     .state('tab.users', {
+    url: '/users',
+    views: {
+      'tab-users': {
+        templateUrl: 'templates/tab-users.html',
+        controller: 'usersCtrl'
       }
     },
         authRequired: true
