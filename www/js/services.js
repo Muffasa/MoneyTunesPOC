@@ -216,7 +216,7 @@ angular.module('starter.services', [])
   }
 ])
 
-.factory('socket',function(socketFactory,$rootScope){
+.factory('socket',function(socketFactory,$rootScope,$ionicModal){
         
          var myIoSocket = io.connect('http://188.226.198.99:3000');
         
@@ -227,11 +227,30 @@ angular.module('starter.services', [])
             mySocket.emit('identify',$rootScope.User.phone_number);
           }
           
-          mySocket.on('incomingCall',function(from){
-            console.log("incoming call from "+from);
-            $rootScope.from=from;
+          mySocket.on('incomingCall',function(fromUser){
 
-            setTimeout(function() {$rootScope.broadcast('incomingCall');}, 5000);
+            console.log("incoming call from incoming call modal will pop in 2 seconds..");
+
+            //$rootScope.callerUser=fromUser;
+            //$rootScope.currentCampaign=
+            
+            $ionicModal.fromTemplateUrl('modals/incoming-call-modal.html', {
+              scope: $rootScope,
+              animation: 'slide-in-up',
+              backdropClickToClose: false,
+              hardwareBackButtonClose: false
+            }).then(function(modal) {
+              $rootScope.incomingCallModal = modal;
+
+            });
+
+            setTimeout(function() {$rootScope.incomingCallModal.show();$rootScope.$broadcast('incomingCallModal.show')}, 3000);
+
+
+
+            
+            
+
             
           })
 
@@ -503,10 +522,28 @@ return {
   };
  })
 
-.factory('Contacts',['$firebaseArray',function($firebaseArray){
+.factory('Contacts',['$firebaseArray','$cordovaContacts',function($firebaseArray,$cordovaContacts){
 
     var userRef = new Firebase("https://mtdemo.firebaseio.com/users");
-    return $firebaseArray(userRef);
+    return{
+      allUsers: function(){
+        return $firebaseArray(userRef);
+      },
+      allContacts: function(){
+        $cordovaContacts.find({filter: ''}).then(function(result) {
+            return result;
+        }, function(error) {
+            console.log("ERROR: " + error);
+        });
+      },
+      allContactsWithNumber: function(){
+        $cordovaContacts.find({filter: ''}).then(function(result) {
+            return result;
+        }, function(error) {
+            console.log("ERROR: " + error);
+        });
+      }
+    } 
 
 
 }])
@@ -555,6 +592,9 @@ return {
         }
       }
       return null;
+    },
+    getUserByPhoneNumber: function(user_phone_number){
+
     }
   };
 })

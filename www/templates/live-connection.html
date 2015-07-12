@@ -1,3 +1,5 @@
+<ion-view>
+<ion-content>
 
   <h1 class="title">Ongoing Call</h1>
           
@@ -9,9 +11,10 @@
 
   <div class="item item-body">
     <h2>{{callerUser.name}}</h2>
-   <!-- <img class="full-image" src="{{callerUser.face}}">-->
-    
-     <timer autostart="false">{{minutes}}:{{seconds}}</timer>
+    <img class="full-image" src="{{callerUser.face}}">
+    <div ng-controller='liveConnectionCtrl'>
+    <timer autostart="false">{{minutes}}:{{seconds}}</timer>
+     </div>
     
   </div>
 
@@ -26,7 +29,7 @@
       <i class="icon ion-ios-keypad-outline" ng-class="{'icon ion-ios-keypad-outline':!dialpadShow,'icon ion-ios-keypad':dialpadShow}" ></i>
       
     </a>
-    <a class="tab-item assertive" ng-tap="hangup()">
+    <a class="tab-item assertive" ng-click="hangup()">
       <i class="icon ion-close-circled"></i>
       
     </a>
@@ -37,7 +40,5 @@
 </div>
 
 </div>
-  
-
-
-
+</ion-content>
+</ion-view>

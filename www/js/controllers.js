@@ -1,13 +1,85 @@
 angular.module('starter.controllers', [])
-.controller('testCtrl', function($scope,Users,Campaigns,Weather) {
+.controller('testCtrl', function($scope,$rootScope,$state,Users,Campaigns,Weather) {
+  $scope.from = Users.get(0);
+  $scope.currentCampaign= Campaigns.get(0);
+ ///test
 
- Weather.getCurrentWeather(32.00,34.00).then(function(res){
-  var currentInF = res.data.currently.apparentTemperature;
-  $scope.currentTemp = (currentInF-32)/1.800;
-  console.log("Weather test, response on fixed location: "+String($scope.currentTemp));
+
+
+
+
+     Weather.getCurrentWeather(32.00,34.00).then(function(res){
+      var currentInF = res.data.currently.apparentTemperature;
+      $scope.currentTemp = (currentInF-32)/1.8;
+      console.log("Weather test, response on fixed location: "+$scope.currentTemp);
+     })
+
+
+    $scope.goToDash=function()
+    {
+      $state.go('tab.dash');
+    } 
+    $scope.goToLiveConnection=function()
+    {
+      $state.go('live-connection');
+    } 
+    $scope.micOn=false;
+            $scope.speaker = function(){
+              $scope.micOn=!$scope.micOn;
+              //TwilioT.Connection.setSpeaker("on");
+            }
+    $scope.showForm=false; 
+    $scope.focusInput=false;
+    $scope.dialpadShow=false;
+    $scope.toggleDialpad = function(){
+      $scope.dialpadShow=!$scope.dialpadShow;
+      $scope.showForm=!$scope.showForm; 
+      $scope.focusInput=!$scope.focusInput;
+    }
+
+    $scope.popupDialpad = function(){
+
+                 $ionicModal.fromTemplateUrl('modals/dialpad-modal.html', {
+                                    scope: $scope,
+                                    animation: 'slide-in-down',
+                                    backdropClickToClose: true,
+                                    hardwareBackButtonClose: true
+                                  }).then(function(modal) {
+                                    $scope.dialpadModal = modal;
+                                  });
+
+                                  $scope.dialpadModal.show();
+
+    }
 })
-$scope.from = Users.get(0);
-$scope.currentCampaign= Campaigns.get(0);
+.controller('liveConnectionCtrl', function($scope,$rootScope,$state,$ionicHistory) {
+
+ $scope.$broadcast('timer-start');
+
+        $scope.micOn=false;
+     $scope.speaker = function(){
+          $scope.micOn=!$scope.micOn;
+
+          $scope.micOn? TwilioT.Connection.setSpeaker("on"):TwilioT.Connection.setSpeaker("off");
+        };
+
+       $scope.showForm=false; 
+       $scope.focusInput=false;
+       $scope.dialpadShow=false;
+     $scope.toggleDialpad = function(){
+          $scope.dialpadShow=!$scope.dialpadShow;
+          $scope.showForm=!$scope.showForm; 
+          $scope.focusInput=!$scope.focusInput;
+        };
+
+     $scope.hangup = function(){
+      TwilioT.Device.disconnectAll();
+      $ionicHistory.goBack();
+
+     }   
+
+
+
 
 })
 .controller('DashCtrl', function($scope, $rootScope, $ionicUser, $ionicPush,$ionicModal,socket,User) {
@@ -44,10 +116,24 @@ $scope.currentCampaign= Campaigns.get(0);
   };
   $scope.showIncomingCall = function(){
     $rootScope.incomingCallModal.show();
+    $rootScope.$broadcast("incomingCallModal.show");//will fire on incoming call socket event
   };
   $scope.showOutgoingCall = function(){
     $scope.outgoingCallModal.show();
   };
+
+
+
+               $ionicModal.fromTemplateUrl('modals/incoming-call-modal.html', {
+              scope: $rootScope,
+              animation: 'slide-in-up',
+              backdropClickToClose: false,
+              hardwareBackButtonClose: false
+            }).then(function(modal) {
+              $rootScope.incomingCallModal = modal;
+
+            });
+
 
 })
 
@@ -73,15 +159,11 @@ $scope.currentCampaign= Campaigns.get(0);
 .controller('ContactsCtrl', function($scope,$cordovaContacts,Contacts) {
   
   
-    $scope.contacts = Contacts;
+    $scope.contacts = Contacts.allUsers();
   
 
    $scope.getContactList = function() {
-    $cordovaContacts.find({filter: ''}).then(function(result) {
-        $scope.contacts = result;
-    }, function(error) {
-        console.log("ERROR: " + error);
-    });
+    
    }
 })
 
@@ -174,6 +256,15 @@ $scope.currentCampaign= Campaigns.get(0);
  
        });*/
 
+$scope.enterAsOhad = function(){
+
+}
+
+
+
+
+
+
       $scope.countries = Countries.all();
       $scope.selectedCountry= $scope.countries[102];
       $scope.usernumber=null;
@@ -186,13 +277,17 @@ $scope.currentCampaign= Campaigns.get(0);
 
       $scope.ConfirmNumber = function(number) {
 
+        if(true)//number.isValid)
+        {
+
           var confirmPopup = $ionicPopup.confirm({
             title: 'Confirmation',
             template: 'Are you sure this is your phone number? an SMS will be send to this number: ' + number,
             cancelText:'Cancel',
-            okText:'Send SMS'
+            okText:'Send'
 
           });
+        }
 
       confirmPopup.then(function(res) {
         if(res) {
@@ -500,10 +595,10 @@ $scope.currentCampaign= Campaigns.get(0);
   }
 
 })
-.controller('twilioTestCtrl', function($scope,$rootScope,$state,$ionicPopup, $http,User,$ionicModal,Ring,socket,Countries) {
+.controller('twilioTestCtrl', function($scope,$rootScope,$state,$ionicPopup, $http,User,$ionicModal,socket,Countries) {
             
 
-$scope.$on('$ionicView.beforeEnter', function() {
+  $scope.$on('$ionicView.beforeEnter', function() {
               
           User.getCurrentUser(function(user){
 
@@ -584,7 +679,7 @@ $scope.$on('$ionicView.beforeEnter', function() {
 
          })
 
-.controller('TwilioTestCtrl', function($scope,$rootScope,$state,$ionicPopup, $http,User,$ionicModal,Ring,socket,Countries) {
+.controller('TwilioTestCtrl', function($scope,$rootScope,$state,$ionicPopup, $http,User,$ionicModal,socket,Countries,MediaSrv) {
             
 
 $scope.$on('$ionicView.beforeEnter', function() {
@@ -601,6 +696,12 @@ $scope.$on('$ionicView.beforeEnter', function() {
  
        });
 
+MediaSrv.loadMedia('./Assets/rington.mp3').then(function(media)
+      {
+        $scope.rington=media;
+        
+      })
+
 
 
 
@@ -612,17 +713,15 @@ $scope.$on('$ionicView.beforeEnter', function() {
                 
 
                 $scope.testRing = function () {
-                  var src = "/Assets/rington.mp3";
-                  var media = new Media(src, null, null, mediaStatusCallback);
-                    media.play()
-               };
+                  $scope.rington.play();
+                };
             
 
 
             // Make a Twilio call.
             $scope.call = function (to) {
               var addPrefix = "+972-"+to;
-               TwilioT.Device.connect({ // Connect our call.
+               $rootScope.connection=TwilioT.Device.connect({ // Connect our call.
                   CallerId:'+97243741132', // Your Twilio number (Format: +15556667777).
                   callFrom: $rootScope.User.phone_number,
                   //PhoneNumber:'<Enter number to call here>',
@@ -633,7 +732,7 @@ $scope.$on('$ionicView.beforeEnter', function() {
             };
 
             $scope.answer = function(){
-              Connection = TwilioT.Device.connect({
+              $rootScope.connection = TwilioT.Device.connect({
                 CallerId:'+97243741132', 
                 AnswerQ:$rootScope.User.phone_number +'Q'    
                 
@@ -648,6 +747,7 @@ $scope.$on('$ionicView.beforeEnter', function() {
 
             $scope.pressed = function (num){
               $scope.dialpadInput+=num;
+              TwilioT.Connection.sendDigits(num);
             };
 
             $scope.removed = function (){
@@ -655,14 +755,10 @@ $scope.$on('$ionicView.beforeEnter', function() {
             }
 
 
-              $ionicModal.fromTemplateUrl('modals/dialpad-modal.html', {
-                  scope: $scope,
-                  animation: 'slide-in-up'
-                }).then(function(modal) {
-                  $scope.modal = modal;
-                });
+              $scope.speakerON=false;
             $scope.openModal = function() {
-              $scope.modal.show();
+              $scope.speakerON=!$scope.speakerON;
+              $scope.speakerON? TwilioT.Connection.setSpeaker('on'):TwilioT.Connection.setSpeaker('off');
             };
             $scope.closeModal = function() {
               $scope.modal.hide();
@@ -691,25 +787,7 @@ $scope.$on('$ionicView.beforeEnter', function() {
 
          })
 
-.controller('callCtrl', function($scope,socket) {
 
-      $ionicModal.fromTemplateUrl('modals/incoming-call-modal.html', {
-                  scope: $scope,
-                  animation: 'slide-in-up'
-                }).then(function(modal) {
-                  $scope.incomingCallModal = modal;
-                });
-
-  socket.on('incomingCall',function(from){
-            //if user.contacts.find(cont=> cont.phoneNumber==from || cont=> cont.phoneNumber.convert()==from)
-
-              $scope.fromNumber=from.phone_number;
-              $scope.fromName=from.userName;
-              $scope.incomingCallModal.show();
-          });
-  $scope.call = function(to){}
-  
-})
 
 .controller('AccountCtrl', function($scope) {
   $scope.user = Global.getCurrentUser;

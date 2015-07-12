@@ -144,10 +144,6 @@
         if (!window.TwilioT) window.TwilioT = {};
         if (!window.TwilioT.Device) window.TwilioT.Device = new TwilioPlugin.Device();
         if (!window.TwilioT.Connection) window.TwilioT.Connection = new TwilioPlugin.Connection();
-
-        if (!Global.TwilioT) Global.TwilioT = {};
-        if (!Global.TwilioT.Device) Global.TwilioT.Device = new TwilioPlugin.Device();
-        if (!Global.TwilioT.Connection) Global.TwilioT.Connection = new TwilioPlugin.Connection();
     }
  TwilioPlugin.install();
 

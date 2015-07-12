@@ -1,27 +1,16 @@
 angular.module('starter.directives', [])
-.directive('myFirstDirective', function() {
-  return {
-    restrict: 'E',
-    template: '<h1>WTWWWWWWWWWFFFFFFFF</h1>',
-    controller: function($scope){
 
-    }
-    
-  };
-})
-.directive('liveConnection',['$state','$rootScope',function($state,$rootScope) {
+/*.directive('liveConnection',['$state','$rootScope',function() {
   return {
 
     restrict: 'E',
     templateUrl: 'templates/myDirectives/live-connection-directive.html',
-      controller: function($scope){
-        alert("work?");
-      }
+    controller: "liveConnectionCtrl"
 
 
     }
  
-}])
+}])*/
 .directive('incomingCall',['$state','$rootScope',function($state,$rootScope) {
   return {
 
@@ -35,51 +24,28 @@ angular.module('starter.directives', [])
 
     },
 
-    controller: function ($scope,$rootScope,$state,MediaSrv,socket){
-      
-      MediaSrv.loadMedia('./Assets/rington.mp3').then(function(media)
-      {
-        $scope.rington=media;
-        $scope.rington.play();
-      })
-      $scope.From = JSON.parse($scope.from);
-      $scope.CurrentCampaign = JSON.parse($scope.currentCampaign);
-
-      //console.log($scope.CurrentCampaign.name);
-      //alert($scope.From.name);
-     // $scope.rington = angular.element().find("audio");
-      //$scope.timer = angular.element().find("timer");
-
-
-      $scope.answer = function(){
-        
-              $rootScope.connection = Twilio.Device.connect({
-                CallerId:'+97243741132', 
-                AnswerQ:$rootScope.User.phone_number +'Q'  
-                });
-              $scope.rington.stop();
-
-                $state.go('live-connection'); 
-               // $rootScope.incomingCallModal.hide(); 
-                //$rootScope.incomingCallModal.destroy();             
-      };
-      $scope.reject = function(){
-        $scope.rington.stop();
-        //$rootScope.incomingCallModal.hide();
-       // $rootScope.incomingCallModal.destroy();
-        socket.emit("rejectCall");
-      };
-      $scope.messege = function(){
-        //new modal  with templates messeges and text box
-      };
-
-    }
+    controller: 'incomingCallCtrl'
     	
 
 
     }
  
 }])
+.directive('focusMe', function($timeout) {
+  return {
+    link: function(scope, element, attrs) {
+      scope.$watch(attrs.focusMe, function(value) {
+        if(value === true) { 
+          console.log('value=',value);
+          $timeout(function() {
+            element[0].focus();
+            //scope[attrs.focusMe] = false;
+          },20);
+        }
+      });
+    }
+  };
+})
 .directive('miniUserView', function() {
   return {
     restrict: 'E',

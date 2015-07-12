@@ -49,7 +49,7 @@
   display: table-cell;
   vertical-align: middle;
   text-align: center;
-}*/
+}
 
 
 .Aligner {
@@ -59,7 +59,7 @@
 }
 
 .Aligner-item {
-  max-width: 50% !important;
+  max-width: 80% !important;
 }
 
 .Aligner-item--top {
@@ -68,4 +68,5 @@
 
 .Aligner-item--bottom {
   align-self: flex-end !important;
-}
+  
+}*/

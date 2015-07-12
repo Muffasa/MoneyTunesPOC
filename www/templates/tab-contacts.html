@@ -1,36 +1,21 @@
-<ion-view view-title="Contacts">
-<ion-content class="row row-top padding">
 
-  
-    <a class="button button-balanced" padding="true" ng-click="getContactList()">Get Real Contacts</a>
 
+
+
+
+<ion-view view-title="Chats">
+    <ion-content>
+        <div class="list">
+
+            <a class="item item-thumbnail-left" ng-repeat="contact in data.selectedContacts">
+                <img src="{{contact.photos[0].value}}" ng-if="contact.photos.length > 0">
+                <img src="http://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Silver_-_replace_this_image_male.svg/200px-Silver_-_replace_this_image_male.svg.png" ng-if="contact.photos.length === 0">
+                <h2>{{contact.displayName}}</h2>
+                <p ng-if="contact.emails.length > 0">{{contact.emails[0].type}} : {{contact.emails[0].value}}</p>
+                <p ng-if="contact.phones.length > 0">{{contact.phones[0].type}} : {{contact.phones[0].value}}</p>
+            </a>
+
+        </div>
+        <p class="padding">Profiles courtesy of http://commons.wikimedia.org/wiki/File:Silver_-_replace_this_image_male.svg</p>
     </ion-content>
-  <ion-content>
-         <style>
-.scroll-content{
-  display: table !important;
-  width: 100% !important;
-  height: 100% !important;
-}
-.scroll {
-  display: table-cell;
-  vertical-align: middle;
-  text-align: center;
-}
-</style>
-    <ion-list>
-      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="contact in contacts" type="item-text-wrap" href="#/tab/contacts/{{contact.id}}">
-
-        <img ng-src="{{contact.face}}">
-        <h2>{{contact.phone_number}}</h2>
-        <!--<p>{{chat.lastText}}</p>-->
-        <i class="icon ion-chevron-right icon-accessory"></i>
-
-        <ion-option-button class="button-assertive" ng-click="getContactList()">
-          Delete
-        </ion-option-button>
-      </ion-item>
-    </ion-list>
-
-  </ion-content>
 </ion-view>

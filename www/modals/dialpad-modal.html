@@ -1,11 +1,23 @@
-<ion-modal-view style="width: 90%; height: 90%;">
+<ion-modal-view class="qqqqq" >
+
+ <style>
+         .qqqqq {
+          margin-top:100%;
+          margin-bottom:10%;
+         }
+        </style>
 <ion-header-bar class="bar bar-header bar-positive">
           <h1 class="title">Dialpad</h1>
           <button class="button button-clear button-primary" ng-click="dialpadModal.hide()">X</button>
         </ion-header-bar>
-  <ion-pane>
+  
     <div class="dialpad" >
-            
+             <style>
+         .dialpad {
+          margin-top:10%;
+          //margin-bottom:10%;
+         }
+        </style>
 
               <div class=" button-bar">
                <a class="button button-positive" ng-click="pressed('1')">1</a>
@@ -28,6 +40,6 @@
                <a class="button " ng-click="pressed('#')">#</a>
              </div>
       </div>
-  </ion-pane>
+  
 </ion-modal-view>
 

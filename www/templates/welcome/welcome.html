@@ -36,7 +36,7 @@
         </div>
         <label class="item item-input">
             <span class="input-label">{{selectedCountry.dial_code}}</span>
-            <input type="tel" name="numberTE" ng-model="usernumber" placeholder="Your phone number" required> 
+            <input maxlenght="10" minlenght="10" type="tel" name="numberTE" ng-model="usernumber" placeholder="Your phone number" required> 
         </label>
         <button on-touch="ConfirmNumber(usernumber)" class="button button-block button-balanced">Start</button>
         

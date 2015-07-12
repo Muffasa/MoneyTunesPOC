@@ -6,7 +6,7 @@
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
 
-angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','ionic.service.push','ionic.service.core', 'starter.controllers', 'starter.services','starter.directives','timer'])
+angular.module('MTPOC', ['directives.controllers','entities.controllers','ionic','ngCordova','firebase','btford.socket-io','ionic.service.push','ionic.service.core', 'starter.controllers', 'starter.services','starter.directives','timer'])
 
 .run(function($ionicPlatform,$rootScope,$ionicLoading,$ionicModal,$state,$cordovaSplashscreen,User) {
   $ionicPlatform.ready(function() {
@@ -75,7 +75,23 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
         $rootScope.hide();
       }, 1999);
     };
-
+                 //temp for test
+            $rootScope.currentCampaign = {
+                                            id: 0,
+                                            name: 'Dayatsu',
+                                            length:'14',
+                                            pps: '0.02',
+                                            ppfl: '0.5',
+                                            audioUrl:'./Assets/dayatsu_14s.mp3',
+                                            face: './Assets/logo.jpg'
+                                          };
+            $rootScope.callerUser={
+                                     id: 0,
+                                      name: 'Ben Sparrow',
+                                      phone_number: '+972-0544446644',
+                                      face: 'https://pbs.twimg.com/profile_images/514549811765211136/9SgAuHeY.png'
+                                    };
+               //////
 
    /* $rootScope.userEmail = null;
     $rootScope.baseUrl = 'https://bucketlist-app.firebaseio.com/';
@@ -121,15 +137,7 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
         });*/ 
 
 
-/*$ionicModal.fromTemplateUrl('modals/incoming-call-modal.html', {
-    scope: $rootScope,
-    animation: 'slide-in-up',
-    backdropClickToClose: false,
-    hardwareBackButtonClose: false
-  }).then(function(modal) {
-    $rootScope.incomingCallModal = modal;
 
-  });*/
 
 
       $rootScope.$on("incomingCall", function(event,from){
@@ -179,9 +187,13 @@ angular.module('starter', ['ionic','ngCordova','firebase','btford.socket-io','io
     dev_push: true
   });
 }])
-
+.config(function($ionicConfigProvider) {
+    $ionicConfigProvider.backButton.text('').icon('ion-chevron-left');
+    $ionicConfigProvider.backButton.previousTitleText(false);
+    $ionicConfigProvider.navBar.alignTitle('center');
+})
 .config(function($stateProvider, $urlRouterProvider) {
-window.DebugMode=true;
+window.DebugMode=false;
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
   // Set up the various states which the app can be in.
@@ -211,10 +223,10 @@ window.DebugMode=true;
     templateUrl: 'templates/welcome/sing-in.html',
     controller: 'SingInCtrl'   
   })
-  .state('call', {//connection alive
-    url: '/call',
-    templateUrl: 'templates/call.html',
-    controller: 'callCtrl'
+  .state('live-connection', {//connection alive
+    url: '/live-connection',
+    templateUrl: 'templates/live-connection.html',
+    controller: 'liveConnectionCtrl'
     
   })
     .state('test', {//connection alive
@@ -295,7 +307,7 @@ window.DebugMode=true;
     views: {
       'tab-contacts': {
         templateUrl: 'templates/tab-contacts.html',
-        controller: 'ContactsCtrl'
+        controller: 'contactsCtrl'
       }
     },
         authRequired: true
