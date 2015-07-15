@@ -1,18 +1,87 @@
 angular.module('starter.services', [])
 
-.factory('Weather', ['$q', '$http', 
-  function($q,  $http) {
-  var url = 'https://api.forecast.io/forecast/' + '803fccd23763a6555da6b83cbc7a2a4f' + '/';
+/*.factory('TwilioService', ['$q','$http','socket' 
+  function($q,$http,socket) {
+        var d =$q.defer();
 
+       var initialized=false;
+       var Init = function(){
+                   $http.get('http://188.226.198.99:3000/twilioTokenGen/'+$rootScope.MainUser.phone_number)
+                  .success(function(twilioToken){
+                  TwilioT.Device.setup(twilioToken);
+                  initialized=true;
+                  d.resolve();
+                })
+                  .error(function(error){
+                    console.log("TwilioService init Error:",error);
+                    d.reject();
+                  });
 
+              return d.promise();    
+       }; 
 
+       
+
+                if($rootScope.MainUser)
+                     Init();
+
+  
   return {
-    //getAtLocation: function(lat, lng) {
-    getCurrentWeather: function(lat, lng) {
-      return $http.jsonp(url + lat + ',' + lng + '?callback=JSON_CALLBACK');
-    }
-  }
-}])
+        init:Init,
+        call: function(to){
+          if(!initialized){
+            Init().then(function(){
+               var addPrefix = "+972-"+to;
+               $rootScope.connection=TwilioT.Device.connect({
+                  CallerId:'+97243741132', 
+                  callFrom: $rootScope.MainUser.phone_number,
+                  callTo:addPrefix 
+               });
+               
+               socket.emit('outgoingCall',addPrefix);
+            });
+          }
+
+               var addPrefix = "+972-"+to;
+               $rootScope.connection=TwilioT.Device.connect({
+                  CallerId:'+97243741132', 
+                  callFrom: $rootScope.MainUser.phone_number,
+                  callTo:addPrefix 
+               });
+               
+               socket.emit('outgoingCall',addPrefix);
+        },
+        answer: function(){
+          if(!initialized){
+            Init().then(function(){             
+               $rootScope.connection=TwilioT.Device.connect({
+                  CallerId:'+97243741132', 
+                  AnswerQ: $rootScope.MainUser.phone_number+"Q"
+               });
+            });
+          }
+
+          $rootScope.connection=TwilioT.Device.connect({
+                  CallerId:'+97243741132', 
+                  AnswerQ: $rootScope.MainUser.phone_number+"Q"
+               });
+        },
+        hangup: function(){
+            TwilioT.Connection.disconnectAll();
+        },
+        pressed:function(digit){
+          TwilioT.Connection.sendDigits(digit);
+        },
+        reject: function(){
+
+        }
+
+    };
+  
+}])*/
+
+
+
 
 .factory('MediaSrv', function($q, $ionicPlatform, $window){
   window.Media = function(src, mediaSuccess, mediaError, mediaStatus){
@@ -49,7 +118,9 @@ angular.module('starter.services', [])
           // Stop recording an audio file.
           stopRecord: function(){},
           // Stop playing an audio file.
-          stop: function(){ sound.pause(); if(mediaSuccess){mediaSuccess();} } // TODO
+          stop: function(){ sound.pause(); if(mediaSuccess){mediaSuccess();} },
+
+          reset: function(){ sound.currentTime=0; } // TODO
         };
  };
   var service = {
@@ -105,116 +176,9 @@ angular.module('starter.services', [])
   return service;
 })
 
-.factory("Auth", ["$firebaseAuth",
-  function($firebaseAuth) {
-    var ref = new Firebase("https://mtdemo.firebaseio.com");
-    return $firebaseAuth(ref);
-  }
-])
-
-.factory("User", ["$firebaseObject","$firebaseAuth","$rootScope","$q","$state",
-  function($firebaseObject,$firebaseAuth,$rootScope,$q,$state) {
-    var ref = new Firebase("https://mtdemo.firebaseio.com");
-    var userRef = new Firebase("https://mtdemo.firebaseio.com/users");
-    var users = $firebaseObject(userRef);
-    var Auth=$firebaseAuth(ref);
-    var currentUserId=null;
-    var currentUser=null;
-    var setCurrentUser =function(uid){
-         var d = $q.defer();
-                  currentUserRef = new Firebase("https://mtdemo.firebaseio.com/users/"+uid);
-                  var result = $firebaseObject(currentUserRef);
-                  result.$loaded().then(function(data){
-                    $rootScope.MainUser = data;
-                    currentUser=data;
-                    d.resolve(data);
-                  });
-                  return d.promise;
-
-          
-      };
-    var getCurrentUser =function(callback){
-      if(typeof callback === 'function'){
-        if(currentUser)
-          callback(currentUser);    
-        if($rootScope.User)
-          callback($rootScope.User);
-        else
-            callback();   
-          }
-          
-      };
-
-      var setUid = function(uid){
-        currentUserId=uid;
-        window.localStorage.setItem("uid",uid);
-      };
-
-    return{
-      saveAuthTokenLocally: function(authToken){
-        if(!window.localStorage.getItem("authToken")||window.localStorage.getItem("authToken")=="user do no exist"){
-          window.localStorage.setItem("authToken",authToken)
-        }
-      },
-      deleteLocalAuthToken: function(){
-        window.localStorage.removeItem("authToken");
-        window.localStorage.removeItem("uid");
-        $rootScope.user_phone_number=null;
-        $rootScope.User=null;
-      },
-      gotAuthToken:function(){
-
-        return window.localStorage.getItem('authToken');
-      },
-      isAuth: function(){
-         var authData = Auth.$getAuth();
-         if(authData){
-          setCurrentUser(authData.uid);
-          return true;
-         }
-         else{
-          return false;
-         }
-
-      },
-      auth: function(){
-        var d = $q.defer();
-        Auth.$authWithCustomToken(window.localStorage.getItem('authToken')).then(function(authData){
-              setCurrentUser(authData.uid).then(function(user){
-                $state.go('tab.account');
-                d.resolve(user);
-              });
-          });
-        return d.promise;
-        
-      },
-      unauth: function(){
-        Auth.$unauth();
-        currentUser =null;
-        currentUserId=null;
-        $rootScope.User=null;
-        window.localStorage.removeItem('uid');
-        window.localStorage.removeItem('authToken');
-        console.log("anauth!!!!");
-        $state.go('welcome');
-      },
-      debugAuth: function()
-      {
-        Auth.$authWithCustomToken("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2IjowLCJkIjp7InVpZCI6Ii1KdG9XN2ZVeFFjdVBwSGZJdm9QIn0sImlhdCI6MTQzNjQ3MzkyMX0.oEkOclaBEkonPHzPr8iuD2l1JKGp2Lxz6Hyyvd71sp4")
-        .then(function(user){
-          $state.go("tab.contacts");
-        })
-      },
 
 
-      getCurrentUser: getCurrentUser,
-      setId:setUid
 
-    }
-
-
-  }
-])
 
 .factory('socket',function(socketFactory,$rootScope,$ionicModal){
         
@@ -229,7 +193,7 @@ angular.module('starter.services', [])
           
           mySocket.on('incomingCall',function(fromUser){
 
-            console.log("incoming call from incoming call modal will pop in 2 seconds..");
+            console.log("incoming call from incoming call modal will pop in 3 seconds..");
 
             //$rootScope.callerUser=fromUser;
             //$rootScope.currentCampaign=

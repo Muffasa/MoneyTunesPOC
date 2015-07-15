@@ -6,9 +6,9 @@
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
 
-angular.module('MTPOC', ['directives.controllers','entities.controllers','ionic','ngCordova','firebase','btford.socket-io','ionic.service.push','ionic.service.core', 'starter.controllers', 'starter.services','starter.directives','timer'])
+angular.module('MTPOC', ['data.services','ionic-material','directives.controllers','register.controllers','entities.controllers','views.controllers','register.services','ionic','ngCordova','firebase','btford.socket-io','ionic.service.push','ionic.service.core', 'starter.controllers', 'starter.services','starter.directives','timer'])
 
-.run(function($ionicPlatform,$rootScope,$ionicLoading,$ionicModal,$state,$cordovaSplashscreen,User) {
+.run(function($ionicPlatform,$rootScope,$ionicLoading,$ionicModal,$state,$cordovaSplashscreen,$timeout,User,socket) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -28,39 +28,22 @@ angular.module('MTPOC', ['directives.controllers','entities.controllers','ionic'
     if(window.DebugMode)
     {
       User.debugAuth();
-                   $rootScope.MainUser={
-                                     country:"Israel",
-                                     ionic_push_token:"DEV-329ccea3-5182-4f4a-9681-83a6a9028a12",
-                                     phone_number: "+972-0544637999",
-                                     propName: "eyJ0eXAiOi",                                     
-                                     twilio_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6InNjb3BlOmNsaWVudDppbmNvbWluZz9jbGllbnROYW1lPSUyQjk3Mi0wNTQ0NjM3OTk5IHNjb3BlOmNsaWVudDpvdXRnb2luZz9hcHBTaWQ9QVAxY2FkZjUzOWE4M2QzNjU2MmJkZDI2OGJkOTZiODkwMyZjbGllbnROYW1lPSUyQjk3Mi0wNTQ0NjM3OTk5IiwiaXNzIjoiQUMxM2M4YmM1Y2RlNTYxM2M3MDZjZGU2NjM4NjY1ZDJkYiIsImV4cCI6MTQzNjcxMDE5M30.gJDwID4NM7PzvjQJ4ZzR1zF5qBcogtso5dd6FX3mpwU",//irelevant build new one on enter
-                                     uid: "-Ju1NhqCQ2NLATxQZ-ER"
 
-                                    };  
     }
     else{
            if(User.gotAuthToken()){
-            console.log("I have Auth Token!");
+            console.log("device have auth token, Authing user...");
             User.auth().then(function(user){
-              console.log("My number is:"+user.phone_number);
+              console.log("user has a token, connected as user:"+$rootScope.MainUser.phone_number);
+
 
             });
           }
           else{
-            console.log("I dont have Auth Token..fresh start...");
+            console.log("no auth token on device..fresh start...");
 
             User.unauth();
           }
-
-          if(User.isAuth()){
-            User.getCurrentUser(function(user){
-              if(user)
-              console.log("the current user after auth: " + user.phone_number);
-              else
-                User.unauth();
-          
-            });
-           }
   
     }
 
@@ -81,12 +64,12 @@ angular.module('MTPOC', ['directives.controllers','entities.controllers','ionic'
  
     $rootScope.notify = function(text) {
       $rootScope.show(text);
-      $window.setTimeout(function() {
+      $timeout(function() {
         $rootScope.hide();
       }, 1999);
     };
                  //temp for test
-            $rootScope.currentCampaign = {
+     $rootScope.currentCampaign = {
                                             id: 0,
                                             name: 'Dayatsu',
                                             length:'14',
@@ -95,66 +78,26 @@ angular.module('MTPOC', ['directives.controllers','entities.controllers','ionic'
                                             audioUrl:'./Assets/dayatsu_14s.mp3',
                                             face: './Assets/logo.jpg'
                                           };
-            $rootScope.callerUser={
+     $rootScope.peerUser={
                                      id: 0,
                                       name: 'Ben Sparrow',
-                                      phone_number: '+972-0544446644',
+                                      phone_number: '+972-0544552644',
                                       face: 'https://pbs.twimg.com/profile_images/514549811765211136/9SgAuHeY.png'
                                     };
 
-                    
-               //////
+                 
 
-   /* $rootScope.userEmail = null;
-    $rootScope.baseUrl = 'https://bucketlist-app.firebaseio.com/';
-    var authRef = new Firebase($rootScope.baseUrl);
-    //$rootScope.auth = $firebaseAuth(authRef);
- 
 
- 
-    $rootScope.logout = function() {
-      $rootScope.auth.$logout();
-      $rootScope.checkSession();
-    };
- 
-    $rootScope.checkSession = function() {
-      var auth = new FirebaseSimpleLogin(authRef, function(error, user) {
-        if (error) {
-          // no action yet.. redirect to default route
-          $rootScope.userEmail = null;
-          $window.location.href = '#/auth/signin';
-        } else if (user) {
-          // user authenticated with Firebase
-          $rootScope.userEmail = user.email;
-          $window.location.href = ('#/bucket/list');
-        } else {
-          // user is logged out
-          $rootScope.userEmail = null;
-          $window.location.href = '#/auth/signin';
+      
+     /* $rootScope.$on("$routeChangeError", function(event, next, previous, error) {
+        if (error === "AUTH_REQUIRED") {
+          $state.go("login");
         }
-      });
-    }*/
-
-      
-      
-    
-
-
-       /*$scope.$apply(function() {            
-                       // sometimes binding does not work! 
-                var device = $cordovaDevice.getDevice();           
-           
-                     });  
-
-        });*/ 
+      });*/
+  
 
 
 
-
-
-      $rootScope.$on("incomingCall", function(event,from){
-        $rootScope.incomingCallModal.show();
-      });
 
       $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
           
@@ -163,29 +106,39 @@ angular.module('MTPOC', ['directives.controllers','entities.controllers','ionic'
           {
 
 
-            if (toState.authRequired){
+                  if (toState.authRequired){
 
-                if(!User.gotAuthToken()) {      
-                  $state.go("welcome");
-                  event.preventDefault(); 
-                }
-                else
-                {
-                  if(!$rootScope.MainUser)
-                  {
-                  User.auth().then(function(user)
-                    {
-                      console.log("user has token and conecting to the app, user:"+user.phone_number);
-                    });
+                      if(!User.gotAuthToken()) {      
+                        $state.go("welcome");
+                        event.preventDefault(); 
+                      }
+                      else
+                      {
+                        if(!$rootScope.MainUser)
+                        {
+                        User.auth().then(function(user)
+                          {
+                            console.log("user has a token, connected as user:"+$rootScope.MainUser.phone_number);
+                          });
+                        }
+                      }
                   }
-                }
-            }
           }
     });
  
       });
 })
-
+.config(function(){
+  window.fbAsyncInit = function() {
+             FB.init({ 
+          appId: '1011619025537769',
+          status: true, 
+          cookie: true, 
+          xfbml: true,
+          version: 'v2.4'
+        });
+         };
+  })
 .config(['$ionicAppProvider', function($ionicAppProvider) {
   
   $ionicAppProvider.identify({
@@ -194,7 +147,7 @@ angular.module('MTPOC', ['directives.controllers','entities.controllers','ionic'
     
     api_key: '98f3518c158248bbd24d46e26edb29c8ea344c7468530882',
 
-    //gcm_id:'558835618221'
+    gcm_id:'558835618221',
 
     dev_push: true
   });
@@ -205,7 +158,7 @@ angular.module('MTPOC', ['directives.controllers','entities.controllers','ionic'
     $ionicConfigProvider.navBar.alignTitle('center');
 })
 .config(function($stateProvider, $urlRouterProvider) {
-window.DebugMode=true;
+window.DebugMode=false;
   // Ionic uses AngularUI Ro uter which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
   // Set up the various states which the app can be in.
@@ -233,7 +186,13 @@ window.DebugMode=true;
   .state('sing-in', {
     url: '/sing-in',
     templateUrl: 'templates/welcome/sing-in.html',
-    controller: 'SingInCtrl'   
+    controller: 'SinginCtrl'   
+  })
+    .state('calling', {//connection alive
+    url: '/calling/:to',
+    templateUrl: 'templates/calling.html',
+    controller: 'callingCtrl'
+    
   })
   .state('live-connection', {//connection alive
     url: '/live-connection',
@@ -279,7 +238,15 @@ window.DebugMode=true;
           controller: 'ChatsCtrl'
         }
       },
-        authRequired: true
+        authRequired: true/*,
+          resolve: {
+     // controller will not be loaded until $waitForAuth resolves
+    // Auth refers to our $firebaseAuth wrapper in the example above
+    "currentAuth": ["AuthProvider", function(AuthProvider) {
+      // $waitForAuth returns a promise so the resolve waits for it to complete
+      return AuthProvider.$waitForAuth();
+    }]
+  }*/
     })
     .state('tab.chat-detail', {
       url: '/chats/:chatId',
@@ -290,7 +257,19 @@ window.DebugMode=true;
         }
       },
         authRequired: true
-    })
+  })
+
+  .state('tab.profile', {
+    url: '/profile',
+    views: {
+      'tab-profile': {
+        templateUrl: 'templates/tab-profile.html',
+        controller: 'profileCtrl'
+      }
+    },
+        authRequired: true
+   
+   })
 
   .state('tab.account', {
     url: '/account',
@@ -301,7 +280,8 @@ window.DebugMode=true;
       }
     },
         authRequired: true
-  })
+   
+   })
 
       .state('tab.twilio-client', {
     url: '/twilio-client',
@@ -351,9 +331,11 @@ window.DebugMode=true;
   ;
 
   // if none of the above states are matched, use this as the fallback
-  if(window.DebugMode)
-  $urlRouterProvider.otherwise('/test');
-    else
-  $urlRouterProvider.otherwise('/welcome');
+  window.DebugMode? $urlRouterProvider.otherwise('/test'):$urlRouterProvider.otherwise('/welcome');
+  
+
+            
+
+
 
 });

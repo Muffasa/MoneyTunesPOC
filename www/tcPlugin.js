@@ -29,10 +29,19 @@
     // polymorphic function. if called with function as an argument, the function is invoked
     // when a connection has been established. if called with an object a connection is established with those options
     TwilioPlugin.Device.prototype.connect = function(argument) {
+        var error = function(error) {
+            if(delegate['ondeviceerror']) delegate['ondeviceerror'](error)
+            if(delegate['onconnectionerror']) delegate['onconnectionerror'](error)
+        }
+
+        var success = function(callback) {
+            var argument = callback['arguments'] || new TwilioPlugin.Connection();
+            if (delegate[callback['callback']]) delegate[callback['callback']](argument);
+        }
         if (typeof(argument) == 'function') {
             delegate['onconnect'] = argument;
         } else if (typeof(argument) == 'object') {
-            Cordova.exec(null,null,"TCPlugin","connect", [argument])
+            Cordova.exec(success,error,"TCPlugin","connect", [argument])
         }
     }
 
@@ -134,16 +143,17 @@
     TwilioPlugin.Connection.prototype.status = function(fn) {
         Cordova.exec(fn, null, "TCPlugin", "connectionStatus", []);
     }
-	
-	    TwilioPlugin.Connection.prototype.parameters = function(fn) {
+    
+        TwilioPlugin.Connection.prototype.parameters = function(fn) {
         Cordova.exec(fn, null, "TCPlugin", "connectionParameters", []);
     }
 
     TwilioPlugin.install = function() {
-        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa");
+        
         if (!window.TwilioT) window.TwilioT = {};
         if (!window.TwilioT.Device) window.TwilioT.Device = new TwilioPlugin.Device();
         if (!window.TwilioT.Connection) window.TwilioT.Connection = new TwilioPlugin.Connection();
+        console.log("Twilio Plugin Installed");
     }
  TwilioPlugin.install();
 

@@ -83,19 +83,22 @@ angular.module("entities.controllers",['entities.services'])
     .controller("usersCtrl", ['$scope','$rootScope', '$ionicActionSheet','UsersService',
      function($scope,$rootScope,$ionicActionSheet, UsersService) {
 
-      alert("usersCtrl");
+      
        
-      $rootScope.show();
+      /*$rootScope.show();
       var allUsers = UsersService.getAllAppUsers();
 
       allUsers.$loaded().then(function(data){
         $scope.allAppUsers=data;
         $rootScope.hide();
-      });
+      });*/
 
-    $scope.selectedUser=null;    
 
-        $scope.showUserOptions = function() {
+      $scope.allAppUsers = UsersService.getAllAppUsers();
+
+       // $scope.selectedUser=null;    
+
+        $scope.showUserOptions = function(selectedUser) {
 
                // Show the action sheet
                var contactOptions = $ionicActionSheet.show({
@@ -105,18 +108,19 @@ angular.module("entities.controllers",['entities.services'])
                    { text: '<i class="ion-android-textsms"></i>Messege' }
                  ],
                  destructiveText: 'Remove',
-                 titleText: $scope.selectedContact.displayName,
+                 titleText: selectedUser.phone_number,
                  cancelText: 'Close',
                  cancel: function() {
                       // add cancel code..
                     },
                  buttonClicked: function(index) {
                    if(index==0){//money tunes call     
-                                 Twilio.Device.connect({ 
+                                $rootScope.connection = Twilio.Device.connect({ 
                                   CallerId:'+97243741132', 
-                                  callFrom: $rootScope.User.phone_number,
-                                  callTo:$scope.selectedContact.formattedPhoneNumber 
-                                 });                           
+                                  callFrom: $rootScope.MainUser.phone_number,
+                                  callTo:$scope.selectedUser.phone_number 
+                                 }); 
+                                 //$state.go("calling");                          
                    }
                    if(index==1){//call
                    

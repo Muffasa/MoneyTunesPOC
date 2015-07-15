@@ -41,7 +41,7 @@
     }
 
     TwilioPlugin.Device.prototype.disconnect = function(fn) {
-        delegate['ondevicedisconnect'] = fn;
+        delegate['ondevicedisconnect'] = fn; 
     }
 
     TwilioPlugin.Device.prototype.ready = function(fn) {
@@ -140,10 +140,11 @@
     }
 
     TwilioPlugin.install = function() {
-        console.log("install TwilioPlugin");
+        
         if (!window.TwilioT) window.TwilioT = {};
         if (!window.TwilioT.Device) window.TwilioT.Device = new TwilioPlugin.Device();
         if (!window.TwilioT.Connection) window.TwilioT.Connection = new TwilioPlugin.Connection();
+        console.log("Twilio Plugin Installed");
     }
  TwilioPlugin.install();
 

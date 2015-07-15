@@ -2620,24 +2620,6 @@ body.grade-b, body.grade-c {
 @-ms-viewport {
   width: device-width; }
 
-  .Aligner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.Aligner-item {
-  max-width: 80%;
-}
-
-.Aligner-item--top {
-  align-self: flex-start;
-}
-
-.Aligner-item--bottom {
-  align-self: flex-end;
-}
-
 .scroll-bar {
   position: absolute;
   z-index: 9999; }
@@ -3184,7 +3166,7 @@ a.subdued {
     min-width: 30px;
     height: 43px;
     text-align: center;
-    text-overflow: clip;
+    text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 17px;
     font-weight: 500;
@@ -4152,7 +4134,7 @@ ion-tabs.tabs-color-active-dark .tab-item {
   color: inherit;
   text-align: center;
   text-decoration: none;
-  text-overflow: clip;
+  text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: 400;
   font-size: 14px;
@@ -4779,7 +4761,7 @@ ion-tabs.tabs-color-active-dark .tab-item {
 
 .item, .item h1, .item h2, .item h3, .item h4, .item h5, .item h6, .item p, .item-content, .item-content h1, .item-content h2, .item-content h3, .item-content h4, .item-content h5, .item-content h6, .item-content p {
   overflow: hidden;
-  text-overflow: clip;
+  text-overflow: ellipsis;
   white-space: nowrap; }
 
 a.item {
@@ -6561,7 +6543,7 @@ progress {
   border-radius: 2px;
   vertical-align: top;
   text-align: center;
-  text-overflow: clip;
+  text-overflow: ellipsis;
   font-size: 16px;
   line-height: 42px;
   cursor: pointer; }
@@ -6991,7 +6973,7 @@ a.button {
   border-width: 1px 0px 1px 1px;
   border-radius: 0;
   text-align: center;
-  text-overflow: clip;
+  text-overflow: ellipsis;
   white-space: nowrap; }
   .button-bar > .button:before, .button-bar > .button .icon:before {
     line-height: 44px; }

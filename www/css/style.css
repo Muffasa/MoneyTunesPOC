@@ -1,4 +1,22 @@
 /* Empty. Add your own CSS if you like */
+
+.Aligner {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.Aligner-item {
+  max-width: 80% !important;
+}
+
+.Aligner-item--top {
+  align-self: flex-start !important;
+}
+
+.Aligner-item--bottom {
+  align-self: flex-end !important;
+
 .app-logo{
   background-image:url('../Assets/logo2.png');
   background-repeat: no-repeat;
@@ -65,21 +83,4 @@
 }
 
 
-.Aligner {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.Aligner-item {
-  max-width: 80% !important;
-}
-
-.Aligner-item--top {
-  align-self: flex-start !important;
-}
-
-.Aligner-item--bottom {
-  align-self: flex-end !important;
-  
 }*/

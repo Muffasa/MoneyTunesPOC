@@ -20,9 +20,8 @@
             <button ui-sref="app.profile" class="button button-full button-balanced ink">Login</button>
         </div>
         <div class="button-bar social-login">
-            <button class="button  icon ion-social-google button-assertive"></button>
-            <button class="button  icon ion-social-twitter button-calm"></button>
-            <button class="button  icon ion-social-facebook button-positive"></button>
+            <button class="button  icon ion-social-google button-assertive" ng-click="login('google')"></button>
+            <button class="button  icon ion-social-facebook button-positive" ng-click="login('facebook')"></button>
         </div>
     </ion-content>
 </ion-view>
